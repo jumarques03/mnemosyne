@@ -1,0 +1,105 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #090b0a;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-rendering: geometricPrecision;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.screen {
+  animation: screen-in 0.45s ease both;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Áreas clicáveis (botões desenhados em SVG) */
+.hit {
+  cursor: pointer;
+  outline: none;
+}
+
+.hit .focus-ring {
+  fill: none;
+  stroke: #f4ecd8;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hit:focus-visible .focus-ring {
+  opacity: 0.9;
+}
+
+.hit .hit-fill,
+.hit .hit-stroke-soft,
+.hit .hit-text {
+  transition: opacity 0.2s ease;
+}
+
+.hit:hover .hit-fill {
+  opacity: 0.24;
+}
+
+.hit:hover .hit-stroke-soft {
+  opacity: 0.8;
+}
+
+/* Indicador de digitação */
+.typing-dot {
+  animation: typing 1.2s ease-in-out infinite;
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Campo de mensagem (foreignObject) */
+.chat-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #f4ecd8;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.chat-input::placeholder {
+  color: #b8a98a;
+  opacity: 0.8;
+}
