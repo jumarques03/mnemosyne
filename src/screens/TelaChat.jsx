@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { cor, fonte } from '../theme.js'
 import { SUGESTOES } from '../services/curador.js'
+import { ajustarAoLargura } from '../utils/medirTexto.js'
 import { useLayout } from '../layout/contexto.js'
 import Ancora from '../layout/Ancora.jsx'
 import Frame from '../components/art/Frame.jsx'
@@ -12,6 +13,9 @@ import AreaConversa from './chat/AreaConversa.jsx'
 import { Chip, CampoPergunta, BotaoEnviar } from './chat/Entrada.jsx'
 import { CFG_PAISAGEM } from './chat/layout.js'
 import TelaChatRetrato from './retrato/TelaChatRetrato.jsx'
+
+const fonteTitulo = (px) => `700 ${px}px "${fonte.titulo}"`
+const fonteArtista = (px) => `italic 500 ${px}px "${fonte.texto}"`
 
 const CHIPS = [
   { x: 560, w: 188, tx: 596.26 },
@@ -25,6 +29,9 @@ export default function TelaChat(props) {
   const { obra, mensagens, digitando, onEnviar, onTrocar, onConcluir, onInicio, onVoltar } = props
   const { modo, limites } = useLayout()
   const [rascunho, setRascunho] = useState('')
+  const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 21, 266, 15)
+  const assinatura = `${obra.artista}, ${obra.ano}`
+  const tamanhoAssinatura = ajustarAoLargura(assinatura, fonteArtista, 17, 266, 13).tamanho
 
   const enviar = (texto) => {
     const limpo = texto.trim()
@@ -50,16 +57,16 @@ export default function TelaChat(props) {
       </Ancora>
 
       <Luminaria cx={265} y={128} fundo={560} meiaBase={169} idCone="chat-cone" />
-      <Frame x={110} y={160} w={310} h={400} fw={17} moldura={obra.moldura} pintura={obra.pintura} passepartout={10} />
+      <Frame x={110} y={160} w={310} h={400} fw={17} moldura={obra.moldura} imagem={obra.imagem} passepartout={10} />
       <Plaquinha x={231} y={572} texto={obra.numero} />
 
       <rect x="110" y="600" width="310" height="120" rx="2" fill="#EDE3CC" opacity="1" />
       <rect x="116" y="606" width="298" height="108" rx="1" fill="none" stroke="#8F7A4A" strokeWidth="1" opacity="0.6" />
-      <text x="134" y="634" fontFamily={fonte.titulo} fontSize="21" fontWeight="700" fontStyle="normal" fill="#1A1410">
+      <text x="134" y="634" fontFamily={fonte.titulo} fontSize={titulo.tamanho} fontWeight="700" fontStyle="normal" fill="#1A1410">
         {obra.titulo}
       </text>
-      <text x="134" y="657" fontFamily={fonte.texto} fontSize="17" fontWeight="500" fontStyle="italic" fill="#4A3F30">
-        {`${obra.artista}, ${obra.ano}`}
+      <text x="134" y="657" fontFamily={fonte.texto} fontSize={tamanhoAssinatura} fontWeight="500" fontStyle="italic" fill="#4A3F30">
+        {assinatura}
       </text>
       <text x="134" y="683" fontFamily={fonte.rotulo} fontSize="12" fontWeight="400" fontStyle="normal" fill="#6B5D48" letterSpacing="1">
         {obra.tecnica}

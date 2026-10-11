@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { cor, fonte } from '../../theme.js'
 import { SUGESTOES } from '../../services/curador.js'
 import { useLayout } from '../../layout/contexto.js'
-import { medirTexto, xCentrado } from '../../utils/medirTexto.js'
+import { ajustarAoLargura, medirTexto, xCentrado } from '../../utils/medirTexto.js'
 import Frame from '../../components/art/Frame.jsx'
 import Botao from '../../components/scene/Botao.jsx'
 import { Fundo, Cornija, Cabecalho, Greca, Vinheta } from '../../components/scene/Ambiente.jsx'
@@ -14,6 +14,8 @@ import { cfgRetrato } from '../chat/layout.js'
 const ESCALA_CONVERSA = 0.9 // as bolhas usam as medidas do design, reduzidas um pouco para caber
 const FONTE_CHIP = `400 14px "${fonte.rotulo}"`
 const ESPACO_CHIP = 0.5
+const fonteTitulo = (px) => `700 ${px}px "${fonte.titulo}"`
+const fonteArtista = (px) => `italic 500 ${px}px "${fonte.texto}"`
 
 /** Distribui as sugestões em duas fileiras centralizadas em `cx`. */
 function posicionarChips(cx, y1, y2) {
@@ -47,6 +49,9 @@ export default function TelaChatRetrato({
   const { H, coluna, limites } = useLayout()
   const x0 = coluna.x
   const cx = x0 + coluna.w / 2
+  const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 19, 256, 14)
+  const assinatura = `${obra.artista}, ${obra.ano}`
+  const tamanhoAssinatura = ajustarAoLargura(assinatura, fonteArtista, 16, 256, 12).tamanho
 
   // Medidas verticais, contadas a partir do rodapé.
   const baselineCampo = H - 50
@@ -73,16 +78,16 @@ export default function TelaChatRetrato({
       <Cabecalho onInicio={onInicio} onVoltar={onVoltar} />
       <line x1={limites.x0} y1="84" x2={limites.x1} y2="84" stroke={cor.ouro} strokeWidth="1" opacity="0.2" />
 
-      <Frame x={x0 + 24} y={102} w={124} h={164} fw={9} moldura={obra.moldura} pintura={obra.pintura} passepartout={8} />
+      <Frame x={x0 + 24} y={102} w={124} h={164} fw={9} moldura={obra.moldura} imagem={obra.imagem} passepartout={8} />
       <Plaquinha x={x0 + 52} y={274} texto={obra.numero} />
 
       <rect x={x0 + 164} y="102" width="292" height="104" rx="2" fill="#EDE3CC" opacity="1" />
       <rect x={x0 + 169} y="107" width="282" height="94" rx="1" fill="none" stroke="#8F7A4A" strokeWidth="1" opacity="0.6" />
-      <text x={x0 + 184} y="134" fontFamily={fonte.titulo} fontSize="19" fontWeight="700" fill="#1A1410">
+      <text x={x0 + 184} y="134" fontFamily={fonte.titulo} fontSize={titulo.tamanho} fontWeight="700" fill="#1A1410">
         {obra.titulo}
       </text>
-      <text x={x0 + 184} y="157" fontFamily={fonte.texto} fontSize="16" fontWeight="500" fontStyle="italic" fill="#4A3F30">
-        {`${obra.artista}, ${obra.ano}`}
+      <text x={x0 + 184} y="157" fontFamily={fonte.texto} fontSize={tamanhoAssinatura} fontWeight="500" fontStyle="italic" fill="#4A3F30">
+        {assinatura}
       </text>
       <text x={x0 + 184} y="181" fontFamily={fonte.rotulo} fontSize="11" fontWeight="400" fill="#6B5D48" letterSpacing="1">
         {obra.tecnica}

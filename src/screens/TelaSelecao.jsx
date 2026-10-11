@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { cor, fonte } from '../theme.js'
 import { useLayout } from '../layout/contexto.js'
 import Ancora from '../layout/Ancora.jsx'
@@ -5,18 +6,49 @@ import { Fundo, LuzJanela, Cornija, Cabecalho, Greca, Vinheta } from '../compone
 import { LinhaDecorativa, Respingo, Pincelada } from '../components/scene/Ornamentos.jsx'
 import { Coluna, Busto } from '../components/scene/Esculturas.jsx'
 import Cartao from './selecao/Cartao.jsx'
-import Paginador from './selecao/Paginador.jsx'
+import SeletorTurma from './selecao/SeletorTurma.jsx'
+import { CARTAO } from './selecao/medidas.js'
 import TelaSelecaoRetrato from './retrato/TelaSelecaoRetrato.jsx'
 
-const CARTAO_X0 = 135
+// Quatro cartões de 270 com 30 de vão ocupam 1170 e cabem de sobra entre as colunas das laterais.
+// Turmas com mais quadros reduzem todos os cartões na mesma proporção para caber na mesma faixa.
 const CARTAO_PASSO = 300
+const CARTAO_VAO = 30
+const FAIXA_CARTOES = 1240
+const CENTRO_CARTOES_Y = CARTAO.y + CARTAO.h / 2
 
-/** 02 · Seleção de quadro — quatro obras expostas, a "ativa" fica iluminada. */
-export default function TelaSelecao({ obras, ativa, onAtiva, onEscolher, onInicio, onVoltar }) {
+/** 02 · Seleção de quadro — as obras da turma escolhida ficam expostas; a "ativa" fica iluminada. */
+export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, onEscolher, onInicio, onVoltar }) {
   const { modo } = useLayout()
+  const { obras, nome } = turmas[turma]
+
+  // No layout largo, ← e → trocam de turma (no vertical, passam de obra).
+  useEffect(() => {
+    if (modo !== 'paisagem') return
+    const teclas = (e) => {
+      if (e.key === 'ArrowLeft') onTurma(turma - 1)
+      if (e.key === 'ArrowRight') onTurma(turma + 1)
+    }
+    window.addEventListener('keydown', teclas)
+    return () => window.removeEventListener('keydown', teclas)
+  }, [modo, turma, onTurma])
+
   if (modo === 'retrato') {
-    return <TelaSelecaoRetrato obras={obras} onEscolher={onEscolher} onInicio={onInicio} onVoltar={onVoltar} />
+    return (
+      <TelaSelecaoRetrato
+        key={turmas[turma].id}
+        turmas={turmas}
+        turma={turma}
+        onTurma={onTurma}
+        onEscolher={onEscolher}
+        onInicio={onInicio}
+        onVoltar={onVoltar}
+      />
+    )
   }
+  const escala = Math.min(1, FAIXA_CARTOES / (CARTAO_PASSO * obras.length - CARTAO_VAO))
+  const esquerda = 720 - ((CARTAO_PASSO * obras.length - CARTAO_VAO) * escala) / 2
+  const topo = CENTRO_CARTOES_Y - (CARTAO.h * escala) / 2
   return (
     <g>
       <Fundo />
@@ -66,18 +98,12 @@ export default function TelaSelecao({ obras, ativa, onAtiva, onEscolher, onInici
       </text>
 
       {obras.map((obra, i) => (
-        <Cartao
-          key={obra.id}
-          obra={obra}
-          id={i}
-          x={CARTAO_X0 + i * CARTAO_PASSO}
-          ativo={i === ativa}
-          onAtiva={() => onAtiva(i)}
-          onEscolher={onEscolher}
-        />
+        <g key={obra.id} transform={`translate(${esquerda + i * CARTAO_PASSO * escala} ${topo - CARTAO.y * escala}) scale(${escala})`}>
+          <Cartao obra={obra} id={i} x={0} ativo={i === ativa} onAtiva={() => onAtiva(i)} onEscolher={onEscolher} />
+        </g>
       ))}
 
-      <Paginador cx={720} cy={830} total={3} atual={0} />
+      <SeletorTurma cx={720} cy={830} turmas={turmas} atual={turma} onIr={onTurma} />
       <text
         x="719.35"
         y="870"
@@ -90,7 +116,7 @@ export default function TelaSelecao({ obras, ativa, onAtiva, onEscolher, onInici
         letterSpacing="4"
         opacity="0.65"
       >
-        {`ACERVO · ${obras.length} OBRAS CADASTRADAS`}
+        {`ACERVO · ${nome.toUpperCase()} · ${obras.length} OBRAS`}
       </text>
       <Greca y={894} opacidade="0.3" />
       <Vinheta />

@@ -46,7 +46,7 @@ export default function TelaEncerramentoRetrato({ obra, onOutro, onInicio, onVol
         <g transform="translate(-720 -150)">
           <Luminaria cx={720} y={166} fundo={370} meiaBase={79} idCone="fim-cone-v" />
           <Louro />
-          <Frame x={655} y={194} w={130} h={170} fw={11} moldura={obra.moldura} pintura={obra.pintura} passepartout={8} />
+          <Frame x={655} y={194} w={130} h={170} fw={11} moldura={obra.moldura} imagem={obra.imagem} passepartout={8} />
         </g>
 
         <text

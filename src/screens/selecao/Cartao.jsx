@@ -1,5 +1,5 @@
 import { cor, fonte } from '../../theme.js'
-import { medirTexto, inicioCentralizado } from '../../utils/medirTexto.js'
+import { ajustarAoLargura, inicioCentralizado } from '../../utils/medirTexto.js'
 import Frame from '../../components/art/Frame.jsx'
 import { Cantinhos, Luminaria, Plaquinha } from '../../components/scene/Ornamentos.jsx'
 import { CARTAO } from './medidas.js'
@@ -10,8 +10,13 @@ import { CARTAO } from './medidas.js'
 // a mesma estimativa para a tela ficar idêntica ao SVG.
 const FATOR_TITULO = 0.8908
 const FATOR_ARTISTA = 0.9984
-const FONTE_TITULO = `700 19px "${fonte.titulo}"`
-const FONTE_ARTISTA = `italic 500 17px "${fonte.texto}"`
+const fonteTitulo = (px) => `700 ${px}px "${fonte.titulo}"`
+const fonteArtista = (px) => `italic 500 ${px}px "${fonte.texto}"`
+
+// Títulos e artistas reais variam bastante de tamanho: o texto encolhe para caber dentro do cartão.
+const LARGURA_MAXIMA_TEXTO = 236
+const MIN_TITULO = 14
+const MIN_ARTISTA = 13
 
 /**
  * Cartão de uma obra: quadro iluminado, plaquinha, título, artista e "CONVERSAR →".
@@ -21,8 +26,10 @@ export default function Cartao({ obra, x, id, ativo, onAtiva, onEscolher }) {
   const { y, w, h } = CARTAO
   const centro = x + w / 2
   const artista = `${obra.artista} · ${obra.ano}`
-  const tituloX = inicioCentralizado(centro, medirTexto(obra.titulo, FONTE_TITULO), FATOR_TITULO)
-  const artistaX = inicioCentralizado(centro, medirTexto(artista, FONTE_ARTISTA), FATOR_ARTISTA)
+  const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 19, LARGURA_MAXIMA_TEXTO, MIN_TITULO)
+  const nome = ajustarAoLargura(artista, fonteArtista, 17, LARGURA_MAXIMA_TEXTO, MIN_ARTISTA)
+  const tituloX = inicioCentralizado(centro, titulo.largura, FATOR_TITULO)
+  const artistaX = inicioCentralizado(centro, nome.largura, FATOR_ARTISTA)
   const escolher = (e) => {
     if (e.type === 'click' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
@@ -63,13 +70,13 @@ export default function Cartao({ obra, x, id, ativo, onAtiva, onEscolher }) {
       />
       <Cantinhos x={x} y={y} w={w} h={h} recuo={8} cor={cor.ouro} opacidade="0.6" />
       <Luminaria cx={centro} y={333} fundo={620} meiaBase={114} idCone={`cartao-cone-${id}`} />
-      <Frame x={x + 35} y={370} w={200} h={250} fw={13} moldura={obra.moldura} pintura={obra.pintura} passepartout={9} />
+      <Frame x={x + 35} y={370} w={200} h={250} fw={13} moldura={obra.moldura} imagem={obra.imagem} passepartout={9} />
       <Plaquinha x={x + 101} y={629} texto={obra.numero} />
       <text
         x={tituloX}
         y="664"
         fontFamily={fonte.titulo}
-        fontSize="19"
+        fontSize={titulo.tamanho}
         fontWeight="700"
         fontStyle="normal"
         fill={cor.creme}
@@ -80,7 +87,7 @@ export default function Cartao({ obra, x, id, ativo, onAtiva, onEscolher }) {
         x={artistaX}
         y="686"
         fontFamily={fonte.texto}
-        fontSize="17"
+        fontSize={nome.tamanho}
         fontWeight="500"
         fontStyle="italic"
         fill={cor.texto}

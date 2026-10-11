@@ -1,6 +1,6 @@
 import { cor } from '../../theme.js'
 
-function Seta({ cx, cy, direcao, onClick, rotulo }) {
+export function Seta({ cx, cy, direcao, onClick, rotulo }) {
   const d = direcao === 'esq' ? 'M3 -7 L-4 0 L3 7' : 'M-3 -7 L4 0 L-3 7'
   const deslocamento = direcao === 'esq' ? 0.5 : -0.5
   const ativar = (e) => {

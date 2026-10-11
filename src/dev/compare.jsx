@@ -8,7 +8,7 @@ import { createRoot } from 'react-dom/client'
 import '../index.css'
 import { carregarFontes } from '../fonts.js'
 import { LARGURA, ALTURA } from '../theme.js'
-import { obras } from '../data/obras.js'
+import { obras, turmas } from '../data/obras.js'
 import TelaInicial from '../screens/TelaInicial.jsx'
 import { mensagensDeExemplo } from '../screens/chat/exemplo.js'
 import inicialSvg from '../../design/01-tela-inicial.svg?raw'
@@ -24,7 +24,7 @@ function resolver(nome) {
   }
   if (nome === 'selecao' && telas['../screens/TelaSelecao.jsx']) {
     const T = telas['../screens/TelaSelecao.jsx'].default
-    return { svg: selecaoSvg, tela: () => <T obras={obras} ativa={2} onEscolher={() => {}} onAtiva={() => {}} onInicio={() => {}} /> }
+    return { svg: selecaoSvg, tela: () => <T turmas={turmas} turma={0} onTurma={() => {}} ativa={2} onEscolher={() => {}} onAtiva={() => {}} onInicio={() => {}} /> }
   }
   if (nome === 'chat' && telas['../screens/TelaChat.jsx']) {
     const T = telas['../screens/TelaChat.jsx'].default

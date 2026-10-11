@@ -6,16 +6,18 @@ import { Pincelada } from '../../components/scene/Ornamentos.jsx'
 import Cartao from '../selecao/Cartao.jsx'
 import { CARTAO } from '../selecao/medidas.js'
 import Paginador from '../selecao/Paginador.jsx'
+import SeletorTurma from '../selecao/SeletorTurma.jsx'
 
 const limitar = (v, min, max) => Math.min(max, Math.max(min, v))
 const DISTANCIA_DO_ARRASTO = 40
 
 /**
- * 02 · Seleção no layout vertical: um cartão por vez, com setas, pontos, teclado
- * (← →) e arrasto lateral para passar de obra.
+ * 02 · Seleção no layout vertical: seletor de turma no alto e um cartão por vez, com setas,
+ * pontos, teclado (← →) e arrasto lateral para passar de obra dentro da turma.
  */
-export default function TelaSelecaoRetrato({ obras, onEscolher, onInicio, onVoltar }) {
+export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher, onInicio, onVoltar }) {
   const { H, coluna } = useLayout()
+  const { obras, nome } = turmas[turma]
   const x0 = coluna.x
   const cx = x0 + coluna.w / 2
 
@@ -39,7 +41,7 @@ export default function TelaSelecaoRetrato({ obras, onEscolher, onInicio, onVolt
   })
 
   // O cartão cresce com a altura da tela (entre 0,66× e 1,12×) e fica um pouco acima do centro.
-  const topoMin = 192
+  const topoMin = 236
   const reservaRodape = 72
   const escala = limitar((H - topoMin - reservaRodape - 12) / CARTAO.h, 0.66, 1.12)
   const sobra = Math.max(0, H - topoMin - reservaRodape - 12 - CARTAO.h * escala)
@@ -92,6 +94,8 @@ export default function TelaSelecaoRetrato({ obras, onEscolher, onInicio, onVolt
         selecione a obra sobre a qual você quer conversar
       </text>
 
+      <SeletorTurma cx={cx} cy={206} turmas={turmas} atual={turma} onIr={onTurma} compacto />
+
       <g
         style={{ touchAction: 'pan-y' }}
         onPointerDown={(e) => (arrasto.current = { x: e.clientX, moveu: false })}
@@ -133,7 +137,7 @@ export default function TelaSelecaoRetrato({ obras, onEscolher, onInicio, onVolt
         letterSpacing="4"
         opacity="0.65"
       >
-        {`ACERVO · ${obras.length} OBRAS CADASTRADAS`}
+        {`ACERVO · ${nome.toUpperCase()} · ${obras.length} OBRAS`}
       </text>
       <Greca y={894} opacidade="0.3" />
       <Vinheta />

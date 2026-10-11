@@ -5,19 +5,21 @@ import TelaInicial from './screens/TelaInicial.jsx'
 import TelaSelecao from './screens/TelaSelecao.jsx'
 import TelaChat from './screens/TelaChat.jsx'
 import TelaEncerramento from './screens/TelaEncerramento.jsx'
-import { obras } from './data/obras.js'
-import { perguntar, saudacao } from './services/curador.js'
+import { turmas } from './data/obras.js'
+import { MENSAGEM_DE_ERRO, perguntar, saudacao } from './services/curador.js'
 
 const agora = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 
 // No design a terceira obra aparece iluminada na seleção.
 const OBRA_ILUMINADA_INICIAL = 2
+const iluminadaInicial = (turma) => Math.min(OBRA_ILUMINADA_INICIAL, turmas[turma].obras.length - 1)
 
 export default function App() {
   const layout = useLayoutDaJanela()
   const [tela, setTela] = useState('inicial') // inicial → selecao → chat → fim
-  const [obra, setObra] = useState(obras[0])
-  const [ativa, setAtiva] = useState(OBRA_ILUMINADA_INICIAL)
+  const [turma, setTurma] = useState(0) // índice em `turmas`
+  const [obra, setObra] = useState(turmas[0].obras[0])
+  const [ativa, setAtiva] = useState(iluminadaInicial(0))
   const [mensagens, setMensagens] = useState([])
   const [aguardando, setAguardando] = useState(0)
 
@@ -35,10 +37,16 @@ export default function App() {
     setTela('selecao')
   }
 
+  const trocarTurma = (indice) => {
+    const proxima = (indice + turmas.length) % turmas.length
+    setTurma(proxima)
+    setAtiva(iluminadaInicial(proxima))
+  }
+
   const escolher = (escolhida) => {
     sessao.current++
     setObra(escolhida)
-    setAtiva(obras.findIndex((o) => o.id === escolhida.id))
+    setAtiva(turmas[turma].obras.findIndex((o) => o.id === escolhida.id))
     setAguardando(0)
     setMensagens([{ id: proximoId.current++, de: 'curadoria', texto: saudacao(escolhida), hora: agora() }])
     setTela('chat')
@@ -48,11 +56,13 @@ export default function App() {
     const minhaSessao = sessao.current
     adicionar('visitante', pergunta)
     setAguardando((n) => n + 1)
-    perguntar(obra, pergunta).then((resposta) => {
-      if (minhaSessao !== sessao.current) return
-      adicionar('curadoria', resposta)
-      setAguardando((n) => n - 1)
-    })
+    perguntar(obra, [...mensagens, { de: 'visitante', texto: pergunta }])
+      .catch((erro) => erro?.message || MENSAGEM_DE_ERRO)
+      .then((resposta) => {
+        if (minhaSessao !== sessao.current) return
+        adicionar('curadoria', resposta)
+        setAguardando((n) => n - 1)
+      })
   }
 
   // A seta do cabeçalho volta uma etapa; do encerramento, retoma a conversa de onde parou.
@@ -69,7 +79,16 @@ export default function App() {
       <g key={tela} className="screen">
         {tela === 'inicial' && <TelaInicial onEntrar={irParaSelecao} />}
         {tela === 'selecao' && (
-          <TelaSelecao obras={obras} ativa={ativa} onAtiva={setAtiva} onEscolher={escolher} onInicio={irParaInicio} onVoltar={irParaInicio} />
+          <TelaSelecao
+            turmas={turmas}
+            turma={turma}
+            onTurma={trocarTurma}
+            ativa={ativa}
+            onAtiva={setAtiva}
+            onEscolher={escolher}
+            onInicio={irParaInicio}
+            onVoltar={irParaInicio}
+          />
         )}
         {tela === 'chat' && (
           <TelaChat

@@ -22,3 +22,13 @@ export function inicioCentralizado(centro, larguraReal, fator) {
 export function xCentrado(x, largura, texto, fonte, espacoEntreLetras = 0) {
   return x + (largura - medirTexto(texto, fonte, espacoEntreLetras)) / 2
 }
+
+/**
+ * Maior tamanho de fonte (até `tamanho`, nunca abaixo de `minimo`) que faz o texto caber em
+ * `larguraMax`. `fontePara(px)` monta a string de fonte do canvas. Devolve também a largura final.
+ */
+export function ajustarAoLargura(texto, fontePara, tamanho, larguraMax, minimo) {
+  const largura = medirTexto(texto, fontePara(tamanho))
+  const final = Math.max(minimo, Math.min(tamanho, (tamanho * larguraMax) / largura))
+  return { tamanho: Number(final.toFixed(2)), largura: (largura * final) / tamanho }
+}

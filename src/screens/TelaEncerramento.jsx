@@ -62,7 +62,7 @@ export default function TelaEncerramento({ obra, onOutro, onInicio, onVoltar }) 
 
       <Luminaria cx={720} y={166} fundo={370} meiaBase={79} idCone="fim-cone" />
       <Louro />
-      <Frame x={655} y={194} w={130} h={170} fw={11} moldura={obra.moldura} pintura={obra.pintura} passepartout={8} />
+      <Frame x={655} y={194} w={130} h={170} fw={11} moldura={obra.moldura} imagem={obra.imagem} passepartout={8} />
 
       <text
         x="575.22"

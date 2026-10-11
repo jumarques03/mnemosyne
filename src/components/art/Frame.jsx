@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import Painting from './Painting.jsx'
+import { ajusteImagem } from './ajusteCover.js'
 
 // Quatro molduras do guia visual: dourada, madeira, branca e preta.
 const TEMAS = {
@@ -88,8 +89,9 @@ function Pregos({ x, y, w, h, fw, tema }) {
  * Quadro completo: sombra, moldura, fundo, pintura e pregos.
  * (x, y, w, h) = retângulo externo; fw = largura da moldura.
  * `passepartout` = respiro extra da moldura branca.
+ * O conteúdo é a `imagem` da obra (ver data/obras.js) ou, sem ela, a pintura desenhada `pintura`.
  */
-export default function Frame({ x, y, w, h, fw, moldura, pintura, passepartout = 10 }) {
+export default function Frame({ x, y, w, h, fw, moldura, pintura, imagem, passepartout = 10 }) {
   const tema = TEMAS[moldura]
   const clipId = `fr-clip-${useId().replace(/:/g, '')}`
   const folga = tema.passepartout ? fw + 3 + passepartout : fw + 3
@@ -98,6 +100,7 @@ export default function Frame({ x, y, w, h, fw, moldura, pintura, passepartout =
   const aw = w - folga * 2
   const ah = h - folga * 2
   const borda = fw * 0.62
+  const encaixe = imagem && ajusteImagem(imagem, aw, ah)
 
   return (
     <g>
@@ -133,7 +136,11 @@ export default function Frame({ x, y, w, h, fw, moldura, pintura, passepartout =
       </clipPath>
       <g clipPath={`url(#${clipId})`}>
         <g transform={`translate(${ax} ${ay})`}>
-          <Painting tipo={pintura} w={aw} h={ah} />
+          {imagem ? (
+            <image href={imagem.src} x={encaixe.x} y={encaixe.y} width={encaixe.largura} height={encaixe.altura} preserveAspectRatio="none" />
+          ) : (
+            <Painting tipo={pintura} w={aw} h={ah} />
+          )}
         </g>
         <rect x={ax} y={ay} width={aw} height={ah} rx="0" fill="url(#fr-brilho)" opacity="1" />
         <rect x={ax} y={ay} width={aw} height={ah} rx="0" fill="none" stroke="#000" strokeWidth="6" opacity="0.3" />
