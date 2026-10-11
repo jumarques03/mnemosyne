@@ -1,7 +1,8 @@
-// Geometria das mensagens do chat. As medidas das bolhas (fonte 21, entrelinha 28, respiro 22…)
-// são as da tela 03 do design; o que muda entre os layouts é só a área onde elas se distribuem.
+// Geometria das mensagens do chat. As medidas das bolhas partem das da tela 03 do design e foram
+// ampliadas para leitura (fonte 24, entrelinha 32, respiro 22…); o que muda entre os layouts é só a área onde elas se distribuem.
 
-export const LINHA = 28 // entrelinha do texto das bolhas
+export const FONTE_BOLHA = '500 24px "Cormorant Garamond"'
+export const LINHA = 32 // entrelinha do texto das bolhas
 export const PAD_X = 22 // respiro lateral dentro da bolha
 export const ALTURA_DIGITANDO = 34
 
@@ -11,8 +12,8 @@ export const CFG_PAISAGEM = {
   topo: 132, // y da primeira bolha
   gap: 46, // da base de uma bolha até o topo da próxima
   gapDigitando: 48, // idem, quando a próxima é o indicador "digitando"
-  curadoria: { avatarX: 570, bolhaX: 608, larguraMin: 600, larguraMax: 620 },
-  visitante: { avatarX: 1352, bordaDireita: 1322, larguraMax: 460 },
+  curadoria: { avatarX: 570, bolhaX: 608, larguraMin: 600, larguraMax: 680 },
+  visitante: { avatarX: 1352, bordaDireita: 1322, larguraMax: 500 },
   janela: { x: 540, y: 112, w: 860, base: 684 },
 }
 

@@ -1,11 +1,11 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Stage from './components/Stage.jsx'
 import { useLayoutDaJanela } from './layout/contexto.js'
 import TelaInicial from './screens/TelaInicial.jsx'
 import TelaSelecao from './screens/TelaSelecao.jsx'
 import TelaChat from './screens/TelaChat.jsx'
 import TelaEncerramento from './screens/TelaEncerramento.jsx'
-import { turmas } from './data/obras.js'
+import { obras, turmas } from './data/obras.js'
 import { MENSAGEM_DE_ERRO, perguntar, saudacao } from './services/curador.js'
 
 const agora = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
@@ -22,6 +22,11 @@ export default function App() {
   const [ativa, setAtiva] = useState(iluminadaInicial(0))
   const [mensagens, setMensagens] = useState([])
   const [aguardando, setAguardando] = useState(0)
+
+  // As pinturas carregam uma vez só, para os cartões que deslizam não aparecerem vazios.
+  useEffect(() => {
+    obras.forEach((o) => (new Image().src = o.imagem.src))
+  }, [])
 
   const proximoId = useRef(1)
   const sessao = useRef(0) // invalida respostas que chegam depois de sair do chat

@@ -1,8 +1,9 @@
 import { useId, useMemo, useRef, useState } from 'react'
 import { medirTexto } from '../../utils/medirTexto.js'
-import { montarLayout } from './layout.js'
+import { FONTE_BOLHA, montarLayout } from './layout.js'
 import { Mensagem, Digitando } from './Mensagens.jsx'
 
+const medirBolha = (texto) => medirTexto(texto, FONTE_BOLHA)
 const limitar = (v, min, max) => Math.min(max, Math.max(min, v))
 const ESMAECER = 18 // faixa (nas bordas da janela) em que as mensagens somem ao rolar
 
@@ -15,7 +16,7 @@ export default function AreaConversa({ mensagens, digitando, cfg }) {
   const [ajuste, setAjuste] = useState({ fim: 0, subiu: 0 })
   const arrasto = useRef(null)
 
-  const layout = useMemo(() => montarLayout(mensagens, digitando, medirTexto, cfg), [mensagens, digitando, cfg])
+  const layout = useMemo(() => montarLayout(mensagens, digitando, medirBolha, cfg), [mensagens, digitando, cfg])
   const { x, y, w, base } = cfg.janela
   const maxRolagem = Math.max(0, layout.fim + ESMAECER - base) // deixa o último horário fora da faixa esmaecida
 

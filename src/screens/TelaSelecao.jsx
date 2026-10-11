@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { cor, fonte } from '../theme.js'
 import { useLayout } from '../layout/contexto.js'
 import Ancora from '../layout/Ancora.jsx'
@@ -7,20 +7,25 @@ import { LinhaDecorativa, Respingo, Pincelada } from '../components/scene/Orname
 import { Coluna, Busto } from '../components/scene/Esculturas.jsx'
 import Cartao from './selecao/Cartao.jsx'
 import SeletorTurma from './selecao/SeletorTurma.jsx'
+import { Seta } from './selecao/Paginador.jsx'
 import { CARTAO } from './selecao/medidas.js'
 import TelaSelecaoRetrato from './retrato/TelaSelecaoRetrato.jsx'
 
-// Quatro cartões de 270 com 30 de vão ocupam 1170 e cabem de sobra entre as colunas das laterais.
-// Turmas com mais quadros reduzem todos os cartões na mesma proporção para caber na mesma faixa.
+// A tela mostra no máximo quatro cartões (270 com 30 de vão) em tamanho cheio; turmas com mais
+// quadros ganham setas nas pontas da fileira para deslizar de um em um.
 const CARTAO_PASSO = 300
-const CARTAO_VAO = 30
-const FAIXA_CARTOES = 1240
-const CENTRO_CARTOES_Y = CARTAO.y + CARTAO.h / 2
+const VISIVEIS = 4
+const ESQUERDA_CARTOES = 135
+const SETA_ESQ_X = 100
+const SETA_DIR_X = 1340
 
 /** 02 · Seleção de quadro — as obras da turma escolhida ficam expostas; a "ativa" fica iluminada. */
 export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, onEscolher, onInicio, onVoltar }) {
   const { modo } = useLayout()
   const { obras, nome } = turmas[turma]
+  const [deslocados, setDeslocados] = useState({}) // primeiro cartão visível de cada turma
+  const inicio = Math.min(deslocados[turma] ?? 0, Math.max(0, obras.length - VISIVEIS))
+  const deslizar = (passo) => setDeslocados((d) => ({ ...d, [turma]: Math.max(0, Math.min(obras.length - VISIVEIS, inicio + passo)) }))
 
   // No layout largo, ← e → trocam de turma (no vertical, passam de obra).
   useEffect(() => {
@@ -46,9 +51,8 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
       />
     )
   }
-  const escala = Math.min(1, FAIXA_CARTOES / (CARTAO_PASSO * obras.length - CARTAO_VAO))
-  const esquerda = 720 - ((CARTAO_PASSO * obras.length - CARTAO_VAO) * escala) / 2
-  const topo = CENTRO_CARTOES_Y - (CARTAO.h * escala) / 2
+  const visiveis = obras.slice(inicio, inicio + VISIVEIS)
+  const centroY = CARTAO.y + CARTAO.h / 2
   return (
     <g>
       <Fundo />
@@ -86,10 +90,11 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
       </text>
       <Pincelada x={560} y={238} sx={1.067} sy={0.2} cor={cor.ouro} opacidade="0.55" />
       <text
-        x="529.07"
-        y="272"
+        x="720"
+        y="274"
+        textAnchor="middle"
         fontFamily={fonte.texto}
-        fontSize="22"
+        fontSize="25"
         fontWeight="500"
         fontStyle="italic"
         fill={cor.texto}
@@ -97,24 +102,32 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
         selecione a obra sobre a qual você quer conversar
       </text>
 
-      {obras.map((obra, i) => (
-        <g key={obra.id} transform={`translate(${esquerda + i * CARTAO_PASSO * escala} ${topo - CARTAO.y * escala}) scale(${escala})`}>
-          <Cartao obra={obra} id={i} x={0} ativo={i === ativa} onAtiva={() => onAtiva(i)} onEscolher={onEscolher} />
+      {visiveis.map((obra, i) => (
+        <g key={obra.id} transform={`translate(${ESQUERDA_CARTOES + i * CARTAO_PASSO} 0)`}>
+          <Cartao obra={obra} id={i} x={0} ativo={inicio + i === ativa} onAtiva={() => onAtiva(inicio + i)} onEscolher={onEscolher} />
         </g>
       ))}
+      {obras.length > VISIVEIS && (
+        <>
+          {inicio > 0 && <Seta cx={SETA_ESQ_X} cy={centroY} direcao="esq" onClick={() => deslizar(-1)} rotulo="Quadros anteriores" />}
+          {inicio < obras.length - VISIVEIS && (
+            <Seta cx={SETA_DIR_X} cy={centroY} direcao="dir" onClick={() => deslizar(1)} rotulo="Mais quadros" />
+          )}
+        </>
+      )}
 
       <SeletorTurma cx={720} cy={830} turmas={turmas} atual={turma} onIr={onTurma} />
       <text
         x="719.35"
-        y="870"
+        y="874"
         textAnchor="middle"
         fontFamily={fonte.rotulo}
-        fontSize="11"
+        fontSize="14"
         fontWeight="500"
         fontStyle="normal"
         fill={cor.texto}
         letterSpacing="4"
-        opacity="0.65"
+        opacity="0.8"
       >
         {`ACERVO · ${nome.toUpperCase()} · ${obras.length} OBRAS`}
       </text>

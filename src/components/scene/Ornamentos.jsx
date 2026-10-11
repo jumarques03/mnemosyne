@@ -91,10 +91,10 @@ export function Luminaria({ cx, y, fundo, meiaBase, idCone }) {
   )
 }
 
-/** Plaquinha dourada com o número da obra. */
-export function Plaquinha({ x, y, texto, textoX }) {
+/** Plaquinha dourada com o número da obra. `escala` a amplia em torno do próprio centro. */
+export function Plaquinha({ x, y, texto, textoX, escala = 1 }) {
   return (
-    <g>
+    <g transform={escala === 1 ? undefined : `translate(${x + 34} ${y + 6.5}) scale(${escala}) translate(${-(x + 34)} ${-(y + 6.5)})`}>
       <defs>
         <linearGradient id="plaquinha-ouro" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#E8CF8A" stopOpacity="1" />

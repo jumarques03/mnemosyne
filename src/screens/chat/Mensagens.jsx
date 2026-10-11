@@ -56,9 +56,9 @@ export function Mensagem({ item, cfg }) {
         <text
           key={i}
           x={x + PAD_X}
-          y={y + (visitante ? 34 : 33) + i * LINHA}
+          y={y + (visitante ? 36 : 35) + i * LINHA}
           fontFamily={fonte.texto}
-          fontSize="21"
+          fontSize="24"
           fontWeight="500"
           fontStyle="normal"
           fill={cor.creme}

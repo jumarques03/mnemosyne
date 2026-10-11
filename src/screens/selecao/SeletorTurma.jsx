@@ -2,7 +2,7 @@ import { cor, fonte } from '../../theme.js'
 import { medirTexto } from '../../utils/medirTexto.js'
 import { Seta } from './Paginador.jsx'
 
-const ALTURA = 32
+const ALTURA = 38
 const GAP = 8
 
 /**
@@ -11,8 +11,9 @@ const GAP = 8
  */
 export default function SeletorTurma({ cx, cy, turmas, atual, onIr, compacto = false }) {
   const espaco = compacto ? 2 : 4
-  const folga = compacto ? 20 : 30
-  const fonteRotulo = `500 12px "${fonte.rotulo}"`
+  const folga = compacto ? 20 : 32
+  const tamanho = compacto ? 13 : 15
+  const fonteRotulo = `500 ${tamanho}px "${fonte.rotulo}"`
   const largura = Math.ceil(Math.max(...turmas.map((t) => medirTexto(t.rotulo, fonteRotulo, espaco)))) + folga
   const total = turmas.length * largura + (turmas.length - 1) * GAP
   const x0 = cx - total / 2
@@ -59,10 +60,10 @@ export default function SeletorTurma({ cx, cy, turmas, atual, onIr, compacto = f
             />
             <text
               x={x + largura / 2 + espaco / 2}
-              y={cy + 4.5}
+              y={cy + tamanho * 0.37}
               textAnchor="middle"
               fontFamily={fonte.rotulo}
-              fontSize="12"
+              fontSize={tamanho}
               fontWeight="500"
               fontStyle="normal"
               fill={ativa ? cor.ouro : cor.texto}

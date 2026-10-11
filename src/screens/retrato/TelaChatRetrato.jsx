@@ -12,7 +12,7 @@ import { Chip, CampoPergunta, BotaoEnviar } from '../chat/Entrada.jsx'
 import { cfgRetrato } from '../chat/layout.js'
 
 const ESCALA_CONVERSA = 0.9 // as bolhas usam as medidas do design, reduzidas um pouco para caber
-const FONTE_CHIP = `400 14px "${fonte.rotulo}"`
+const FONTE_CHIP = `400 15px "${fonte.rotulo}"`
 const ESPACO_CHIP = 0.5
 const fonteTitulo = (px) => `700 ${px}px "${fonte.titulo}"`
 const fonteArtista = (px) => `italic 500 ${px}px "${fonte.texto}"`
@@ -49,9 +49,9 @@ export default function TelaChatRetrato({
   const { H, coluna, limites } = useLayout()
   const x0 = coluna.x
   const cx = x0 + coluna.w / 2
-  const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 19, 256, 14)
+  const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 21, 256, 14)
   const assinatura = `${obra.artista}, ${obra.ano}`
-  const tamanhoAssinatura = ajustarAoLargura(assinatura, fonteArtista, 16, 256, 12).tamanho
+  const tamanhoAssinatura = ajustarAoLargura(assinatura, fonteArtista, 18, 256, 13).tamanho
 
   // Medidas verticais, contadas a partir do rodapé.
   const baselineCampo = H - 50
@@ -79,7 +79,7 @@ export default function TelaChatRetrato({
       <line x1={limites.x0} y1="84" x2={limites.x1} y2="84" stroke={cor.ouro} strokeWidth="1" opacity="0.2" />
 
       <Frame x={x0 + 24} y={102} w={124} h={164} fw={9} moldura={obra.moldura} imagem={obra.imagem} passepartout={8} />
-      <Plaquinha x={x0 + 52} y={274} texto={obra.numero} />
+      <Plaquinha x={x0 + 52} y={274} texto={obra.numero} escala={1.3} />
 
       <rect x={x0 + 164} y="102" width="292" height="104" rx="2" fill="#EDE3CC" opacity="1" />
       <rect x={x0 + 169} y="107" width="282" height="94" rx="1" fill="none" stroke="#8F7A4A" strokeWidth="1" opacity="0.6" />
@@ -129,7 +129,7 @@ export default function TelaChatRetrato({
       </g>
 
       {chips.map(({ texto, x, y, w, tx }) => (
-        <Chip key={texto} x={x} y={y} w={w} h={30} tx={tx} texto={texto} tamanho={14} onClick={onPerguntar} />
+        <Chip key={texto} x={x} y={y} w={w} h={30} tx={tx} texto={texto} tamanho={15} onClick={onPerguntar} />
       ))}
 
       <line x1={x0 + 24} y1={linhaCampo} x2={x0 + 456} y2={linhaCampo} stroke={cor.ouro} strokeWidth="1" opacity="0.25" />

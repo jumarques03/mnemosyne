@@ -8,7 +8,6 @@ const TEMPO_LIMITE_MS = 60_000
 
 export const MENSAGEM_DE_ERRO = 'Desculpe, não consegui responder agora. Tente de novo em instantes.'
 
-// A quebra depois de "diante de" repete a diagramação da tela de chat do design.
 export function saudacao(obra) {
   return `Olá! Eu sou ${obra.personagem}. Você está diante de\n“${obra.titulo}”. Pergunte o que quiser.`
 }

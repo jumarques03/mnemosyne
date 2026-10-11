@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { cor, fonte } from '../theme.js'
 import { SUGESTOES } from '../services/curador.js'
-import { ajustarAoLargura } from '../utils/medirTexto.js'
+import { ajustarAoLargura, medirTexto } from '../utils/medirTexto.js'
 import { useLayout } from '../layout/contexto.js'
 import Ancora from '../layout/Ancora.jsx'
 import Frame from '../components/art/Frame.jsx'
@@ -14,24 +14,31 @@ import { Chip, CampoPergunta, BotaoEnviar } from './chat/Entrada.jsx'
 import { CFG_PAISAGEM } from './chat/layout.js'
 import TelaChatRetrato from './retrato/TelaChatRetrato.jsx'
 
+const fonteRotulo = (px) => `400 ${px}px "${fonte.rotulo}"`
 const fonteTitulo = (px) => `700 ${px}px "${fonte.titulo}"`
 const fonteArtista = (px) => `italic 500 ${px}px "${fonte.texto}"`
 
-const CHIPS = [
-  { x: 560, w: 188, tx: 596.26 },
-  { x: 762, w: 173, tx: 795.79 },
-  { x: 949, w: 180, tx: 984.98 },
-  { x: 1143, w: 180, tx: 1174 },
-]
+const FONTE_CHIP = `400 15px "${fonte.rotulo}"`
+const CHIPS = (() => {
+  let x = 560
+  return SUGESTOES.map((texto) => {
+    const w = Math.ceil(medirTexto(texto, FONTE_CHIP, 0.5)) + 40
+    const chip = { x, w, tx: x + 20 }
+    x += w + 14
+    return chip
+  })
+})()
 
 /** 03 · Chat — painel com a obra à esquerda e a conversa com a curadoria à direita. */
 export default function TelaChat(props) {
   const { obra, mensagens, digitando, onEnviar, onTrocar, onConcluir, onInicio, onVoltar } = props
   const { modo, limites } = useLayout()
   const [rascunho, setRascunho] = useState('')
-  const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 21, 266, 15)
+  const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 24, 266, 16)
+  const tecnica = ajustarAoLargura(obra.tecnica, fonteRotulo, 14, 232, 11)
+  const acervo = ajustarAoLargura(obra.acervo, fonteRotulo, 14, 232, 11)
   const assinatura = `${obra.artista}, ${obra.ano}`
-  const tamanhoAssinatura = ajustarAoLargura(assinatura, fonteArtista, 17, 266, 13).tamanho
+  const tamanhoAssinatura = ajustarAoLargura(assinatura, fonteArtista, 19, 266, 14).tamanho
 
   const enviar = (texto) => {
     const limpo = texto.trim()
@@ -58,20 +65,20 @@ export default function TelaChat(props) {
 
       <Luminaria cx={265} y={128} fundo={560} meiaBase={169} idCone="chat-cone" />
       <Frame x={110} y={160} w={310} h={400} fw={17} moldura={obra.moldura} imagem={obra.imagem} passepartout={10} />
-      <Plaquinha x={231} y={572} texto={obra.numero} />
+      <Plaquinha x={231} y={572} texto={obra.numero} escala={1.3} />
 
       <rect x="110" y="600" width="310" height="120" rx="2" fill="#EDE3CC" opacity="1" />
       <rect x="116" y="606" width="298" height="108" rx="1" fill="none" stroke="#8F7A4A" strokeWidth="1" opacity="0.6" />
-      <text x="134" y="634" fontFamily={fonte.titulo} fontSize={titulo.tamanho} fontWeight="700" fontStyle="normal" fill="#1A1410">
+      <text x="134" y="636" fontFamily={fonte.titulo} fontSize={titulo.tamanho} fontWeight="700" fontStyle="normal" fill="#1A1410">
         {obra.titulo}
       </text>
       <text x="134" y="657" fontFamily={fonte.texto} fontSize={tamanhoAssinatura} fontWeight="500" fontStyle="italic" fill="#4A3F30">
         {assinatura}
       </text>
-      <text x="134" y="683" fontFamily={fonte.rotulo} fontSize="12" fontWeight="400" fontStyle="normal" fill="#6B5D48" letterSpacing="1">
+      <text x="134" y="683" fontFamily={fonte.rotulo} fontSize={tecnica.tamanho} fontWeight="400" fontStyle="normal" fill="#6B5D48" letterSpacing="1">
         {obra.tecnica}
       </text>
-      <text x="134" y="703" fontFamily={fonte.rotulo} fontSize="12" fontWeight="400" fontStyle="normal" fill="#6B5D48" letterSpacing="1">
+      <text x="134" y="705" fontFamily={fonte.rotulo} fontSize={acervo.tamanho} fontWeight="400" fontStyle="normal" fill="#6B5D48" letterSpacing="1">
         {obra.acervo}
       </text>
 
@@ -106,11 +113,11 @@ export default function TelaChat(props) {
       <AreaConversa mensagens={mensagens} digitando={digitando} cfg={CFG_PAISAGEM} />
 
       {SUGESTOES.map((texto, i) => (
-        <Chip key={texto} {...CHIPS[i]} texto={texto} onClick={enviar} />
+        <Chip key={texto} {...CHIPS[i]} y={694} h={38} tamanho={15} texto={texto} onClick={enviar} />
       ))}
 
       <line x1="540" y1="762" x2="1380" y2="762" stroke={cor.ouro} strokeWidth="1" opacity="0.25" />
-      <CampoPergunta x={560} baseline={806} w={752} valor={rascunho} onMudar={setRascunho} onEnviar={enviar} />
+      <CampoPergunta x={560} baseline={808} w={752} tamanho={25} valor={rascunho} onMudar={setRascunho} onEnviar={enviar} />
       <Pincelada x={560} y={814} sx={2.433} sy={0.225} cor={cor.ouro} opacidade="0.45" />
       <BotaoEnviar cx={1340} cy={800} onEnviar={() => enviar(rascunho)} />
 
