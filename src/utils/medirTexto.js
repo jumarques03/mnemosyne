@@ -17,3 +17,8 @@ export function inicioCentralizado(centro, larguraReal, fator) {
   return centro - (larguraReal * fator) / 2
 }
 
+
+/** X inicial para centralizar um texto numa faixa [x, x + largura] usando a largura medida. */
+export function xCentrado(x, largura, texto, fonte, espacoEntreLetras = 0) {
+  return x + (largura - medirTexto(texto, fonte, espacoEntreLetras)) / 2
+}

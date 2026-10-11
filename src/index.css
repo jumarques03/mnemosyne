@@ -5,6 +5,15 @@ body,
   margin: 0;
 }
 
+/* Em celulares, 100dvh acompanha a barra de endereço que aparece e some. */
+@supports (height: 100dvh) {
+  html,
+  body,
+  #root {
+    height: 100dvh;
+  }
+}
+
 body {
   background: #090b0a;
   overflow: hidden;
@@ -102,4 +111,36 @@ body {
 .chat-input::placeholder {
   color: #b8a98a;
   opacity: 0.8;
+}
+
+/* Troca de cartão no carrossel vertical */
+.entra-da-direita {
+  animation: entra-da-direita 0.35s ease both;
+}
+
+.entra-da-esquerda {
+  animation: entra-da-esquerda 0.35s ease both;
+}
+
+@keyframes entra-da-direita {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+@keyframes entra-da-esquerda {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen,
+  .entra-da-direita,
+  .entra-da-esquerda,
+  .typing-dot {
+    animation: none;
+  }
 }

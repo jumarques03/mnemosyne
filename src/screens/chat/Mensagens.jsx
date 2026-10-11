@@ -1,23 +1,7 @@
 import { cor, fonte } from '../../theme.js'
 import { Cantinhos } from '../../components/scene/Ornamentos.jsx'
 import Paleta from '../../components/scene/Paleta.jsx'
-import { CURADORIA, VISITANTE, LINHA, PAD_X } from './layout.js'
-
-const hora = (m) => (
-  <text
-    x={m.de === 'visitante' ? VISITANTE.bordaDireita : CURADORIA.bolhaX}
-    textAnchor={m.de === 'visitante' ? 'end' : undefined}
-    fontFamily={fonte.rotulo}
-    fontSize="11"
-    fontWeight="400"
-    fontStyle="normal"
-    fill={cor.texto}
-    letterSpacing="1"
-    opacity="0.7"
-  >
-    {m.hora}
-  </text>
-)
+import { LINHA, PAD_X } from './layout.js'
 
 function Avatar({ cx, cy, visitante }) {
   if (visitante) {
@@ -48,11 +32,11 @@ function Avatar({ cx, cy, visitante }) {
 }
 
 /** Uma mensagem: avatar, bolha com cantos decorativos, linhas de texto e horário. */
-export function Mensagem({ item }) {
+export function Mensagem({ item, cfg }) {
   const { m, x, y, w, h, linhas } = item
   const visitante = m.de === 'visitante'
   const tinta = visitante ? cor.vermelho : cor.ouro
-  const avatarX = visitante ? VISITANTE.avatarX : CURADORIA.avatarX
+  const avatarX = visitante ? cfg.visitante.avatarX : cfg.curadoria.avatarX
   return (
     <g>
       {!visitante && <Avatar cx={avatarX} cy={y + 22} />}
@@ -83,22 +67,36 @@ export function Mensagem({ item }) {
         </text>
       ))}
       {visitante && <Avatar cx={avatarX} cy={y + 22} visitante />}
-      <g transform={`translate(0 ${y + h + 18})`}>{hora(m)}</g>
+      <text
+        x={visitante ? cfg.visitante.bordaDireita : cfg.curadoria.bolhaX}
+        y={y + h + 18}
+        textAnchor={visitante ? 'end' : undefined}
+        fontFamily={fonte.rotulo}
+        fontSize="11"
+        fontWeight="400"
+        fontStyle="normal"
+        fill={cor.texto}
+        letterSpacing="1"
+        opacity="0.7"
+      >
+        {m.hora}
+      </text>
     </g>
   )
 }
 
 /** Indicador "a curadoria está digitando…" */
-export function Digitando({ y }) {
+export function Digitando({ y, cfg }) {
+  const x = cfg.curadoria.bolhaX
   const pontos = [
-    [630, cor.ouro, 1, 0],
-    [645, cor.vermelho, 1, 0.2],
-    [660, cor.texto, 0.7, 0.4],
+    [x + 22, cor.ouro, 1, 0],
+    [x + 37, cor.vermelho, 1, 0.2],
+    [x + 52, cor.texto, 0.7, 0.4],
   ]
   return (
     <g>
-      <Avatar cx={CURADORIA.avatarX} cy={y + 17} />
-      <rect x={CURADORIA.bolhaX} y={y} width="74" height="34" rx="17" fill="#101311" stroke={cor.ouro} strokeWidth="1" opacity="0.9" />
+      <Avatar cx={cfg.curadoria.avatarX} cy={y + 17} />
+      <rect x={x} y={y} width="74" height="34" rx="17" fill="#101311" stroke={cor.ouro} strokeWidth="1" opacity="0.9" />
       {pontos.map(([cx, fill, opacidade, atraso]) => (
         <circle
           key={cx}

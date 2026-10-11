@@ -4,7 +4,7 @@ import { cor, fonte } from '../../theme.js'
  * Botão desenhado em SVG (como no design). `ouro` = preenchimento translúcido
  * + contorno dourado; `neutro` = contorno creme discreto.
  */
-export default function Botao({ x, y, w, h, variante, texto, textoX, textoY, tamanho, onClick, rotulo }) {
+export default function Botao({ x, y, w, h, variante, texto, textoX, textoY, tamanho, espaco = 4, onClick, rotulo }) {
   const ouro = variante === 'ouro'
   const ativar = (e) => {
     if (e.type === 'click' || e.key === 'Enter' || e.key === ' ') {
@@ -35,7 +35,7 @@ export default function Botao({ x, y, w, h, variante, texto, textoX, textoY, tam
         fontWeight="500"
         fontStyle="normal"
         fill={cor.creme}
-        letterSpacing="4"
+        letterSpacing={espaco}
       >
         {texto}
       </text>

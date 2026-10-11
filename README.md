@@ -16,11 +16,23 @@ npm run build    # saída em dist/
 npm run lint
 ```
 
+## Layout responsivo
+
+O palco SVG acompanha a proporção da janela (`src/layout/`), sem faixas pretas:
+
+| Janela | Modo | O que acontece |
+| --- | --- | --- |
+| mais larga que alta (≥ 0,95) | **paisagem** | O desenho de 1440 × 900 fica no centro e o viewBox cresce no eixo que sobrar. Cenário (fundo, cornija, cortina, piso, azulejos, greca, vinheta) vai até as bordas; colunas, quadros, bustos e cavaletes se prendem à lateral/rodapé mais próximo (`<Ancora>`); o conteúdo principal fica centralizado. Em 1440 × 900 nada se move. |
+| mais alta que larga (< 0,95) | **retrato** | Composição vertical própria em uma coluna de 480 (palco de até 640 em tablets): início com título e acervo empilhados; seleção com um cartão por vez (setas, pontos, ← →, arrasto lateral); chat com obra e botões no alto, conversa no meio e sugestões/campo embaixo; encerramento com botões empilhados. |
+
+O tamanho vem de `useLayoutDaJanela()` (resize e rotação) e é entregue às telas por contexto (`useLayout()`).
+Cada tela escolhe entre o desenho largo e o vertical (`src/screens/retrato/`).
+
 ## Como ficou fiel ao design
 
-Cada tela é desenhada em SVG num palco fixo de **1440 × 900** (`src/components/Stage.jsx`), que escala para
-caber na janela mantendo a proporção. Geometria, cores, degradês, fontes e textos vêm dos SVGs; o que se repete
-virou componente (moldura, pintura, coluna, busto, cornija, greca, respingo, luminária…).
+Cada tela é desenhada em SVG no sistema de coordenadas do design (1440 × 900). Geometria, cores, degradês,
+fontes e textos vêm dos SVGs; o que se repete virou componente (moldura, pintura, coluna, busto, cornija, greca,
+respingo, luminária…).
 
 Fontes (instaladas localmente com `@fontsource`): Playfair Display, Jost e Cormorant Garamond.
 
@@ -36,7 +48,7 @@ Com o servidor rodando, abra `compare.html` (ferramenta de desenvolvimento, fora
 
 `tela` = `inicial` · `selecao` · `chat` · `fim`.
 
-Resultado atual: inicial, chat e encerramento com **0 pixels de diferença**; seleção com ~0,08 % (apenas sub-pixel
+A comparação vale para o layout de paisagem em 1440 × 900. Resultado atual: inicial, chat e encerramento com **0 pixels de diferença**; seleção com ~0,08 % (apenas sub-pixel
 nos títulos "Título da obra 0N", cujo X no SVG foi calculado com uma largura estimada).
 
 ## Onde mexer

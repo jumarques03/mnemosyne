@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import Stage from './components/Stage.jsx'
+import { useLayoutDaJanela } from './layout/contexto.js'
 import TelaInicial from './screens/TelaInicial.jsx'
 import TelaSelecao from './screens/TelaSelecao.jsx'
 import TelaChat from './screens/TelaChat.jsx'
@@ -13,6 +14,7 @@ const agora = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', mi
 const OBRA_ILUMINADA_INICIAL = 2
 
 export default function App() {
+  const layout = useLayoutDaJanela()
   const [tela, setTela] = useState('inicial') // inicial → selecao → chat → fim
   const [obra, setObra] = useState(obras[0])
   const [ativa, setAtiva] = useState(OBRA_ILUMINADA_INICIAL)
@@ -53,6 +55,9 @@ export default function App() {
     })
   }
 
+  // A seta do cabeçalho volta uma etapa; do encerramento, retoma a conversa de onde parou.
+  const voltarParaChat = () => setTela('chat')
+
   const concluir = () => {
     sessao.current++
     setAguardando(0)
@@ -60,11 +65,11 @@ export default function App() {
   }
 
   return (
-    <Stage titulo="Mnemosyne · Arte em conversa">
+    <Stage titulo="Mnemosyne · Arte em conversa" layout={layout}>
       <g key={tela} className="screen">
         {tela === 'inicial' && <TelaInicial onEntrar={irParaSelecao} />}
         {tela === 'selecao' && (
-          <TelaSelecao obras={obras} ativa={ativa} onAtiva={setAtiva} onEscolher={escolher} onInicio={irParaInicio} />
+          <TelaSelecao obras={obras} ativa={ativa} onAtiva={setAtiva} onEscolher={escolher} onInicio={irParaInicio} onVoltar={irParaInicio} />
         )}
         {tela === 'chat' && (
           <TelaChat
@@ -75,9 +80,10 @@ export default function App() {
             onTrocar={irParaSelecao}
             onConcluir={concluir}
             onInicio={irParaInicio}
+            onVoltar={irParaSelecao}
           />
         )}
-        {tela === 'fim' && <TelaEncerramento obra={obra} onOutro={irParaSelecao} onInicio={irParaInicio} />}
+        {tela === 'fim' && <TelaEncerramento obra={obra} onOutro={irParaSelecao} onInicio={irParaInicio} onVoltar={voltarParaChat} />}
       </g>
     </Stage>
   )

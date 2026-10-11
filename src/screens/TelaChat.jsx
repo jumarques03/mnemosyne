@@ -1,14 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { cor, fonte } from '../theme.js'
 import { SUGESTOES } from '../services/curador.js'
-import { medirTexto } from '../utils/medirTexto.js'
+import { useLayout } from '../layout/contexto.js'
+import Ancora from '../layout/Ancora.jsx'
 import Frame from '../components/art/Frame.jsx'
 import Botao from '../components/scene/Botao.jsx'
 import { Fundo, Cornija, Cabecalho, Greca, Vinheta } from '../components/scene/Ambiente.jsx'
 import { LinhaDecorativa, Respingo, Pincelada, Luminaria, Plaquinha } from '../components/scene/Ornamentos.jsx'
 import { Coluna } from '../components/scene/Esculturas.jsx'
-import { Mensagem, Digitando } from './chat/Mensagens.jsx'
-import { montarLayout, JANELA } from './chat/layout.js'
+import AreaConversa from './chat/AreaConversa.jsx'
+import { Chip, CampoPergunta, BotaoEnviar } from './chat/Entrada.jsx'
+import { CFG_PAISAGEM } from './chat/layout.js'
+import TelaChatRetrato from './retrato/TelaChatRetrato.jsx'
 
 const CHIPS = [
   { x: 560, w: 188, tx: 596.26 },
@@ -17,46 +20,11 @@ const CHIPS = [
   { x: 1143, w: 180, tx: 1174 },
 ]
 
-function Chip({ x, w, tx, texto, onClick }) {
-  const ativar = (e) => {
-    if (e.type === 'click' || e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      onClick(texto)
-    }
-  }
-  return (
-    <g className="hit" role="button" tabIndex={0} aria-label={texto} onClick={ativar} onKeyDown={ativar}>
-      <rect className="hit-fill" x={x} y="696" width={w} height="34" rx="17" fill={cor.ouro} opacity="0" />
-      <rect x={x} y="696" width={w} height="34" rx="17" fill="none" stroke={cor.ouro} strokeWidth="1" opacity="0.55" />
-      <text
-        x={tx}
-        y="718"
-        fontFamily={fonte.rotulo}
-        fontSize="13"
-        fontWeight="400"
-        fontStyle="normal"
-        fill={cor.creme}
-        letterSpacing="0.5"
-      >
-        {texto}
-      </text>
-      <rect className="focus-ring" x={x - 4} y="692" width={w + 8} height="42" rx="21" fill="none" opacity="0" />
-    </g>
-  )
-}
-
 /** 03 · Chat — painel com a obra à esquerda e a conversa com a curadoria à direita. */
-export default function TelaChat({ obra, mensagens, digitando, onEnviar, onTrocar, onConcluir, onInicio }) {
+export default function TelaChat(props) {
+  const { obra, mensagens, digitando, onEnviar, onTrocar, onConcluir, onInicio, onVoltar } = props
+  const { modo, limites } = useLayout()
   const [rascunho, setRascunho] = useState('')
-  const [ajuste, setAjuste] = useState({ fim: 0, subiu: 0 })
-
-  const layout = useMemo(() => montarLayout(mensagens, digitando, medirTexto), [mensagens, digitando])
-  const maxRolagem = Math.max(0, layout.fim - JANELA.base)
-
-  // A conversa acompanha o fim; o que o visitante "sobe" com a roda vale só até chegar algo novo.
-  const subiu = ajuste.fim === layout.fim ? ajuste.subiu : 0
-  const rolagem = Math.max(0, maxRolagem - subiu)
-  const rolar = (e) => setAjuste({ fim: layout.fim, subiu: Math.min(maxRolagem, Math.max(0, subiu - e.deltaY)) })
 
   const enviar = (texto) => {
     const limpo = texto.trim()
@@ -65,16 +33,21 @@ export default function TelaChat({ obra, mensagens, digitando, onEnviar, onTroca
     setRascunho('')
   }
 
-  const idAreaMensagens = 'chat-area-mensagens'
+  if (modo === 'retrato') return <TelaChatRetrato {...props} rascunho={rascunho} onRascunho={setRascunho} onPerguntar={enviar} />
+
   return (
     <g>
       <Fundo />
       <Cornija />
-      <LinhaDecorativa de={[0, 780]} para={[40, 830]} cor={cor.ouro} opLinha="0.25" opLosango="0.5" />
-      <Coluna x={19} capY={150} fuste={34} altura={600} opacidade="0.38" idFuste="chat-coluna" />
+      <Ancora x="esq" y="base">
+        <LinhaDecorativa de={[0, 780]} para={[40, 830]} cor={cor.ouro} opLinha="0.25" opLosango="0.5" />
+        <Coluna x={19} capY={150} fuste={34} altura={600} opacidade="0.38" idFuste="chat-coluna" />
+      </Ancora>
       <Respingo cx={470} cy={640} u={1.2} cor={cor.vermelho} opacidade="0.22" />
-      <Cabecalho onInicio={onInicio} />
-      <line x1="0" y1="104" x2="1440" y2="104" stroke={cor.ouro} strokeWidth="1" opacity="0.2" />
+      <Cabecalho onInicio={onInicio} onVoltar={onVoltar} />
+      <Ancora y="topo">
+        <line x1={limites.x0} y1="104" x2={limites.x1} y2="104" stroke={cor.ouro} strokeWidth="1" opacity="0.2" />
+      </Ancora>
 
       <Luminaria cx={265} y={128} fundo={560} meiaBase={169} idCone="chat-cone" />
       <Frame x={110} y={160} w={310} h={400} fw={17} moldura={obra.moldura} pintura={obra.pintura} passepartout={10} />
@@ -123,74 +96,16 @@ export default function TelaChat({ obra, mensagens, digitando, onEnviar, onTroca
 
       <line x1="500" y1="130" x2="500" y2="860" stroke={cor.ouro} strokeWidth="1" opacity="0.18" />
 
-      <clipPath id={idAreaMensagens}>
-        <rect x={JANELA.x} y={JANELA.y} width={JANELA.w} height={JANELA.base - JANELA.y} />
-      </clipPath>
-      <g clipPath={`url(#${idAreaMensagens})`}>
-        <rect x={JANELA.x} y={JANELA.y} width={JANELA.w} height={JANELA.base - JANELA.y} fill="transparent" onWheel={rolar} />
-        <g transform={`translate(0 ${-rolagem})`} onWheel={rolar}>
-          {layout.itens.map((item) =>
-            item.tipo === 'digitando' ? (
-              <Digitando key="digitando" y={item.y} />
-            ) : (
-              <Mensagem key={item.m.id} item={item} />
-            ),
-          )}
-        </g>
-      </g>
+      <AreaConversa mensagens={mensagens} digitando={digitando} cfg={CFG_PAISAGEM} />
 
       {SUGESTOES.map((texto, i) => (
         <Chip key={texto} {...CHIPS[i]} texto={texto} onClick={enviar} />
       ))}
 
       <line x1="540" y1="762" x2="1380" y2="762" stroke={cor.ouro} strokeWidth="1" opacity="0.25" />
-      {rascunho === '' && (
-        <text
-          x="560"
-          y="806"
-          fontFamily={fonte.texto}
-          fontSize="22"
-          fontWeight="500"
-          fontStyle="italic"
-          fill={cor.texto}
-          opacity="0.8"
-          pointerEvents="none"
-        >
-          pergunte algo sobre este quadro…
-        </text>
-      )}
-      <foreignObject x="560" y="776" width="752" height="46">
-        <input
-          className="chat-input"
-          type="text"
-          value={rascunho}
-          maxLength={280}
-          autoComplete="off"
-          aria-label="Pergunte algo sobre este quadro"
-          onChange={(e) => setRascunho(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && enviar(rascunho)}
-        />
-      </foreignObject>
+      <CampoPergunta x={560} baseline={806} w={752} valor={rascunho} onMudar={setRascunho} onEnviar={enviar} />
       <Pincelada x={560} y={814} sx={2.433} sy={0.225} cor={cor.ouro} opacidade="0.45" />
-      <g
-        className="hit"
-        role="button"
-        tabIndex={0}
-        aria-label="Enviar pergunta"
-        onClick={() => enviar(rascunho)}
-        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), enviar(rascunho))}
-      >
-        <circle cx="1340" cy="800" r="25" fill={cor.ouro} opacity="1" />
-        <path
-          d="M1329 800 H1351 M1343 791 L1352 800 L1343 809"
-          stroke="#0B0907"
-          strokeWidth="2.4"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle className="focus-ring" cx="1340" cy="800" r="30" fill="none" opacity="0" />
-      </g>
+      <BotaoEnviar cx={1340} cy={800} onEnviar={() => enviar(rascunho)} />
 
       <Greca y={898} opacidade="0.28" />
       <Vinheta />
