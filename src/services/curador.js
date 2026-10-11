@@ -9,7 +9,7 @@ const TEMPO_LIMITE_MS = 60_000
 export const MENSAGEM_DE_ERRO = 'Desculpe, não consegui responder agora. Tente de novo em instantes.'
 
 export function saudacao(obra) {
-  return `Olá! Eu sou ${obra.personagem}. Você está diante de\n“${obra.titulo}”. Pergunte o que quiser.`
+  return `Olá! Eu sou ${obra.personagem}. Você está diante de “${obra.titulo}”. Pergunte o que quiser.`
 }
 
 /**
