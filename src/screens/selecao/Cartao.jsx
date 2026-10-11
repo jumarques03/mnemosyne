@@ -1,20 +1,15 @@
 import { cor, fonte } from '../../theme.js'
-import { ajustarAoLargura, inicioCentralizado } from '../../utils/medirTexto.js'
+import { ajustarAoLargura } from '../../utils/medirTexto.js'
 import Frame from '../../components/art/Frame.jsx'
 import { Cantinhos, Luminaria, Plaquinha } from '../../components/scene/Ornamentos.jsx'
 import { CARTAO } from './medidas.js'
 
 
-// No design, título e artista foram posicionados com a largura estimada do texto
-// (não a medida), então ficam levemente à direita do centro do cartão. Repetimos
-// a mesma estimativa para a tela ficar idêntica ao SVG.
-const FATOR_TITULO = 0.8908
-const FATOR_ARTISTA = 0.9984
 const fonteTitulo = (px) => `700 ${px}px "${fonte.titulo}"`
 const fonteArtista = (px) => `italic 500 ${px}px "${fonte.texto}"`
 
 // Títulos e artistas reais variam bastante de tamanho: o texto encolhe para caber dentro do cartão.
-const LARGURA_MAXIMA_TEXTO = 244
+const LARGURA_MAXIMA_TEXTO = 218 // deixa uma folga de ~26 de cada lado dentro do cartão de 270
 const TAMANHO_TITULO = 22
 const TAMANHO_ARTISTA = 20
 const MIN_TITULO = 15
@@ -30,8 +25,6 @@ export default function Cartao({ obra, x, id, ativo, onAtiva, onEscolher }) {
   const artista = `${obra.artista} · ${obra.ano}`
   const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, TAMANHO_TITULO, LARGURA_MAXIMA_TEXTO, MIN_TITULO)
   const nome = ajustarAoLargura(artista, fonteArtista, TAMANHO_ARTISTA, LARGURA_MAXIMA_TEXTO, MIN_ARTISTA)
-  const tituloX = inicioCentralizado(centro, titulo.largura, FATOR_TITULO)
-  const artistaX = inicioCentralizado(centro, nome.largura, FATOR_ARTISTA)
   const escolher = (e) => {
     if (e.type === 'click' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
@@ -75,8 +68,9 @@ export default function Cartao({ obra, x, id, ativo, onAtiva, onEscolher }) {
       <Frame x={x + 24} y={352} w={222} h={298} fw={14} moldura={obra.moldura} imagem={obra.imagem} passepartout={9} />
       <Plaquinha x={x + 101} y={660} texto={obra.numero} escala={1.4} />
       <text
-        x={tituloX}
+        x={centro}
         y="704"
+        textAnchor="middle"
         fontFamily={fonte.titulo}
         fontSize={titulo.tamanho}
         fontWeight="700"
@@ -86,8 +80,9 @@ export default function Cartao({ obra, x, id, ativo, onAtiva, onEscolher }) {
         {obra.titulo}
       </text>
       <text
-        x={artistaX}
+        x={centro}
         y="727"
+        textAnchor="middle"
         fontFamily={fonte.texto}
         fontSize={nome.tamanho}
         fontWeight="500"
