@@ -1,4 +1,5 @@
 import { cor, fonte } from '../theme.js'
+import { medirTexto, xCentrado } from '../utils/medirTexto.js'
 import { useLayout } from '../layout/contexto.js'
 import Ancora from '../layout/Ancora.jsx'
 import Frame from '../components/art/Frame.jsx'
@@ -38,10 +39,29 @@ function Texto({ x, y, fonte: familia, tamanho, peso = '500', cor: fill, espaco,
   )
 }
 
+const PALAVRAS = ['COR', 'FORMA', 'LUZ', 'MEMÓRIA']
+const FONTE_PALAVRA = `500 18px "${fonte.rotulo}"`
+const ESPACO_PALAVRA = 6
+const RESPIRO_LOSANGO = 34 // da palavra até o losango que a separa da próxima
+
+// Palavras em fila, centradas em x = 720, com um losango entre cada par.
+function posicionarPalavras() {
+  const larguras = PALAVRAS.map((p) => medirTexto(p, FONTE_PALAVRA, ESPACO_PALAVRA))
+  const passo = RESPIRO_LOSANGO * 2 + 8
+  const total = larguras.reduce((a, b) => a + b, 0) + passo * (PALAVRAS.length - 1)
+  let x = 720 - total / 2
+  return PALAVRAS.map((p, i) => {
+    const palavra = { p, x, losango: x + larguras[i] + RESPIRO_LOSANGO + 4 }
+    x += larguras[i] + passo
+    return palavra
+  })
+}
+
 /** 01 · Tela inicial — "Mnemosyne · Arte em conversa". */
 export default function TelaInicial({ onEntrar }) {
   const { modo } = useLayout()
   if (modo === 'retrato') return <TelaInicialRetrato onEntrar={onEntrar} />
+  const palavras = posicionarPalavras()
   return (
     <g>
       <Fundo />
@@ -119,7 +139,7 @@ export default function TelaInicial({ onEntrar }) {
           1920 — 1980
         </Texto>
       </Ancora>
-      <Texto x="583.92" y="240" fonte={fonte.rotulo} tamanho="13" cor={cor.ouro} espaco="7">
+      <Texto x={xCentrado(0, 1440, '— GALERIA VIRTUAL —', `500 17px "${fonte.rotulo}"`, 8)} y="240" fonte={fonte.rotulo} tamanho="17" cor={cor.ouro} espaco="8">
         — GALERIA VIRTUAL —
       </Texto>
       <Texto x="474.69" y="342" fonte={fonte.titulo} tamanho="96" peso="700" cor={cor.creme} espaco="1">
@@ -129,32 +149,25 @@ export default function TelaInicial({ onEntrar }) {
       <Texto x="560.35" y="410" fonte={fonte.rotulo} tamanho="22" peso="400" cor={cor.texto} espaco="7">
         ARTE EM CONVERSA
       </Texto>
-      <Texto x="472.88" y="495" fonte={fonte.rotulo} tamanho="14" cor={cor.creme} espaco="5">
-        COR
-      </Texto>
-      <Texto x="608.34" y="495" fonte={fonte.rotulo} tamanho="14" cor={cor.creme} espaco="5">
-        FORMA
-      </Texto>
-      <Texto x="775.52" y="495" fonte={fonte.rotulo} tamanho="14" cor={cor.creme} espaco="5">
-        LUZ
-      </Texto>
-      <Texto x="895.16" y="495" fonte={fonte.rotulo} tamanho="14" cor={cor.creme} espaco="5">
-        MEMÓRIA
-      </Texto>
-      <path d="M570 487 l4 4 l-4 4 l-4 -4Z" fill={cor.ouro} opacity=".7" />
-      <path d="M720 487 l4 4 l-4 4 l-4 -4Z" fill={cor.ouro} opacity=".7" />
-      <path d="M870 487 l4 4 l-4 4 l-4 -4Z" fill={cor.ouro} opacity=".7" />
+      {palavras.map(({ p, x, losango }, i) => (
+        <g key={p}>
+          <Texto x={x} y="497" fonte={fonte.rotulo} tamanho="18" cor={cor.creme} espaco={ESPACO_PALAVRA}>
+            {p}
+          </Texto>
+          {i < palavras.length - 1 && <path d={`M${losango} 488 l5 5 l-5 5 l-5 -5Z`} fill={cor.ouro} opacity=".7" />}
+        </g>
+      ))}
 
       <Botao
-        x={580}
-        y={560}
-        w={280}
-        h={58}
+        x={545}
+        y={554}
+        w={350}
+        h={68}
         variante="ouro"
         texto="ENTRAR NA GALERIA"
-        textoX={611.72}
+        textoX={xCentrado(545, 350, 'ENTRAR NA GALERIA', `500 20px "${fonte.rotulo}"`, 4)}
         textoY={594}
-        tamanho={15}
+        tamanho={20}
         onClick={onEntrar}
       />
       <Vinheta />

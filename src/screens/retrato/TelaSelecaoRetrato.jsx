@@ -86,7 +86,7 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
         y="168"
         textAnchor="middle"
         fontFamily={fonte.texto}
-        fontSize="17"
+        fontSize="20"
         fontWeight="500"
         fontStyle="italic"
         fill={cor.texto}

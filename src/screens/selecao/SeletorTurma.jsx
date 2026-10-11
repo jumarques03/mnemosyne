@@ -1,13 +1,12 @@
 import { cor, fonte } from '../../theme.js'
 import { medirTexto } from '../../utils/medirTexto.js'
-import { Seta } from './Paginador.jsx'
 
 const ALTURA = 38
 const GAP = 8
 
 /**
- * Seletor de turma: setas e um botão por turma ("OITAVO A", "OITAVO B"…), no lugar dos pontos de
- * página da tela 02. `compacto` aperta o espaçamento para a coluna estreita do layout vertical.
+ * Seletor de turma: um botão por turma ("OITAVO A", "OITAVO B"…), no lugar dos pontos de página
+ * da tela 02 (←/→ também trocam de turma). `compacto` aperta o espaçamento para a coluna estreita do layout vertical.
  */
 export default function SeletorTurma({ cx, cy, turmas, atual, onIr, compacto = false }) {
   const espaco = compacto ? 2 : 4
@@ -17,12 +16,9 @@ export default function SeletorTurma({ cx, cy, turmas, atual, onIr, compacto = f
   const largura = Math.ceil(Math.max(...turmas.map((t) => medirTexto(t.rotulo, fonteRotulo, espaco)))) + folga
   const total = turmas.length * largura + (turmas.length - 1) * GAP
   const x0 = cx - total / 2
-  const afastamento = total / 2 + (compacto ? 34 : 44)
 
   return (
     <g role="group" aria-label="Turma">
-      <Seta cx={cx - afastamento} cy={cy} direcao="esq" onClick={() => onIr(atual - 1)} rotulo="Turma anterior" />
-      <Seta cx={cx + afastamento} cy={cy} direcao="dir" onClick={() => onIr(atual + 1)} rotulo="Próxima turma" />
       {turmas.map((turma, i) => {
         const x = x0 + i * (largura + GAP)
         const ativa = i === atual

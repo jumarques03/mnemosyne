@@ -105,10 +105,10 @@ export const turmas = [
         grupo: 'Monalisos',
         personagem: 'Olympe de Gouges',
         titulo: 'Retrato de Olympe de Gouges',
-        artista: 'Autor desconhecido',
+        artista: 'Alexander Kucharsky',
         ano: 'séc. XVIII',
-        tecnica: 'Pintura',
-        imagem: imagem('8efb-monalisos', 960, 1337, [0.5, 0.3]),
+        tecnica: 'Pastel',
+        imagem: imagem('8efb-monalisos', 816, 1090, [0.5, 0.3]),
       },
       {
         id: '8efb-technosyne',

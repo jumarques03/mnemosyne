@@ -65,22 +65,24 @@ export default function TelaEncerramento({ obra, onOutro, onInicio, onVoltar }) 
       <Frame x={655} y={194} w={130} h={170} fw={11} moldura={obra.moldura} imagem={obra.imagem} passepartout={8} />
 
       <text
-        x="575.22"
+        x="720"
         y="426"
+        textAnchor="middle"
         fontFamily={fonte.rotulo}
-        fontSize="13"
+        fontSize="17"
         fontWeight="500"
         fontStyle="normal"
         fill={cor.ouro}
-        letterSpacing="7"
+        letterSpacing="8"
       >
         — VISITA CONCLUÍDA —
       </text>
       <text
-        x="624.37"
-        y="470"
+        x="720"
+        y="472"
+        textAnchor="middle"
         fontFamily={fonte.texto}
-        fontSize="26"
+        fontSize="33"
         fontWeight="500"
         fontStyle="italic"
         fill={cor.texto}

@@ -115,6 +115,6 @@ nos títulos "Título da obra 0N", cujo X no SVG foi calculado com uma largura e
 Pinturas em domínio público, baixadas do Wikimedia Commons e reduzidas para ~1000 px de altura:
 Robespierre (pintor desconhecido, c. 1790) · Pizarro (Amable-Paul Coutan, 1834–35) · *Independência ou Morte* (Pedro Américo, 1888) ·
 *Maria Antonieta e seus filhos* (Vigée Le Brun, 1787) · *A Morte de Marat* (Jacques-Louis David, 1793) · *Miguel Hidalgo con estandarte* (Antonio Fabrés, 1905) ·
-*Napoleão cruzando os Alpes* (David, versão de Malmaison) · Olympe de Gouges (autor desconhecido) · Luís XVI (Antoine-François Callet, versão do Kunsthistorisches Museum) ·
+*Napoleão cruzando os Alpes* (David, versão de Malmaison) · *Olympe de Gouges* (pastel de Alexander Kucharsky) · Luís XVI (Antoine-François Callet, versão do Kunsthistorisches Museum) ·
 *Moctezuma II visitando as tumbas de seus antepassados* (Daniel del Valle, 1895) · Leopoldina (Joseph Kreutzinger, 1815) · Hernán Cortés (José Salomé Pina, c. 1879, Museu do Prado) ·
 *A Família Imperial* (François-René Moreaux, 1857) · aquarela de Túpac Amaru II (autor desconhecido) · Simón Bolívar (José Gil de Castro, c. 1823).

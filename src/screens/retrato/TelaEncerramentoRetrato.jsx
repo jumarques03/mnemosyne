@@ -54,14 +54,14 @@ export default function TelaEncerramentoRetrato({ obra, onOutro, onInicio, onVol
           y="278"
           textAnchor="middle"
           fontFamily={fonte.rotulo}
-          fontSize="12"
+          fontSize="15"
           fontWeight="500"
           fill={cor.ouro}
           letterSpacing="5"
         >
           — VISITA CONCLUÍDA —
         </text>
-        <text x="0" y="318" textAnchor="middle" fontFamily={fonte.texto} fontSize="22" fontWeight="500" fontStyle="italic" fill={cor.texto}>
+        <text x="0" y="318" textAnchor="middle" fontFamily={fonte.texto} fontSize="27" fontWeight="500" fontStyle="italic" fill={cor.texto}>
           você conversou sobre
         </text>
         <text

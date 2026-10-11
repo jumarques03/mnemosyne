@@ -28,9 +28,9 @@ export default function TelaInicialRetrato({ onEntrar }) {
   const total = alturaBloco + (comQuadros ? 36 + alturaQuadro : 0)
   const t = 124 + Math.max(24, (livre - total) / 2) // linha de base do rótulo "GALERIA VIRTUAL"
 
-  const fontePalavra = `500 12px "${fonte.rotulo}"`
+  const fontePalavra = `500 15px "${fonte.rotulo}"`
   const larguras = PALAVRAS.map((p) => medirTexto(p, fontePalavra, 4))
-  const folga = 30
+  const folga = 36
   const totalPalavras = larguras.reduce((a, b) => a + b, 0) + folga * (PALAVRAS.length - 1)
   const palavras = PALAVRAS.map((p, i) => {
     const x = cx - totalPalavras / 2 + larguras.slice(0, i).reduce((soma, l) => soma + l + folga, 0)
@@ -81,7 +81,7 @@ export default function TelaInicialRetrato({ onEntrar }) {
         y={t}
         textAnchor="middle"
         fontFamily={fonte.rotulo}
-        fontSize="12"
+        fontSize="15"
         fontWeight="500"
         fill={cor.ouro}
         letterSpacing="6"
@@ -115,7 +115,7 @@ export default function TelaInicialRetrato({ onEntrar }) {
       </text>
       {palavras.map(({ p, x, losango }, i) => (
         <g key={p}>
-          <text x={x} y={t + 166} fontFamily={fonte.rotulo} fontSize="12" fontWeight="500" fill={cor.creme} letterSpacing="4">
+          <text x={x} y={t + 166} fontFamily={fonte.rotulo} fontSize="15" fontWeight="500" fill={cor.creme} letterSpacing="4">
             {p}
           </text>
           {i < palavras.length - 1 && (
@@ -131,9 +131,9 @@ export default function TelaInicialRetrato({ onEntrar }) {
         h={54}
         variante="ouro"
         texto="ENTRAR NA GALERIA"
-        textoX={xCentrado(cx - 130, 260, 'ENTRAR NA GALERIA', `500 15px "${fonte.rotulo}"`, 4)}
-        textoY={t + 200 + 32}
-        tamanho={15}
+        textoX={xCentrado(cx - 130, 260, 'ENTRAR NA GALERIA', `500 17px "${fonte.rotulo}"`, 4)}
+        textoY={t + 200 + 33}
+        tamanho={17}
         onClick={onEntrar}
       />
 

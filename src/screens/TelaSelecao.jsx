@@ -18,6 +18,7 @@ const VISIVEIS = 4
 const ESQUERDA_CARTOES = 135
 const SETA_ESQ_X = 100
 const SETA_DIR_X = 1340
+const SUBIDA = 40 // quanto o bloco de título, cartões e seletor sobe em relação ao desenho original
 
 /** 02 · Seleção de quadro — as obras da turma escolhida ficam expostas; a "ativa" fica iluminada. */
 export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, onEscolher, onInicio, onVoltar }) {
@@ -52,7 +53,7 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
     )
   }
   const visiveis = obras.slice(inicio, inicio + VISIVEIS)
-  const centroY = CARTAO.y + CARTAO.h / 2
+  const centroY = CARTAO.y + CARTAO.h / 2 - SUBIDA
   return (
     <g>
       <Fundo />
@@ -78,7 +79,7 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
 
       <text
         x="436.24"
-        y="232"
+        y={232 - SUBIDA}
         fontFamily={fonte.titulo}
         fontSize="54"
         fontWeight="700"
@@ -88,13 +89,13 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
       >
         ESCOLHA UM QUADRO
       </text>
-      <Pincelada x={560} y={238} sx={1.067} sy={0.2} cor={cor.ouro} opacidade="0.55" />
+      <Pincelada x={560} y={238 - SUBIDA} sx={1.067} sy={0.2} cor={cor.ouro} opacidade="0.55" />
       <text
         x="720"
-        y="274"
+        y={274 - SUBIDA}
         textAnchor="middle"
         fontFamily={fonte.texto}
-        fontSize="25"
+        fontSize="29"
         fontWeight="500"
         fontStyle="italic"
         fill={cor.texto}
@@ -103,7 +104,7 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
       </text>
 
       {visiveis.map((obra, i) => (
-        <g key={obra.id} transform={`translate(${ESQUERDA_CARTOES + i * CARTAO_PASSO} 0)`}>
+        <g key={obra.id} transform={`translate(${ESQUERDA_CARTOES + i * CARTAO_PASSO} ${-SUBIDA})`}>
           <Cartao obra={obra} id={i} x={0} ativo={inicio + i === ativa} onAtiva={() => onAtiva(inicio + i)} onEscolher={onEscolher} />
         </g>
       ))}
@@ -116,10 +117,10 @@ export default function TelaSelecao({ turmas, turma, onTurma, ativa, onAtiva, on
         </>
       )}
 
-      <SeletorTurma cx={720} cy={830} turmas={turmas} atual={turma} onIr={onTurma} />
+      <SeletorTurma cx={720} cy={830 - SUBIDA} turmas={turmas} atual={turma} onIr={onTurma} />
       <text
         x="719.35"
-        y="874"
+        y={874 - SUBIDA}
         textAnchor="middle"
         fontFamily={fonte.rotulo}
         fontSize="14"
