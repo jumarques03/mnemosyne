@@ -21,6 +21,28 @@ npm run test:server         # testes do backend
 
 Sem a chave o app abre normalmente, mas as perguntas no chat respondem que o servidor não está configurado.
 Em produção, `npm run build` seguido de `npm run server` serve o frontend e a API na mesma porta.
+No Windows, o `iniciar.bat` faz tudo isso com dois cliques (e abre o Bloco de Notas para colar a chave).
+
+## Publicar na Vercel (gratuito, sem "dormir")
+
+O site (pasta `dist`) vira estático e o chat roda como função serverless em `api/chat.js` — a mesma lógica do
+servidor local (`server/`), então o comportamento é idêntico. `vercel.json` já traz o build, a pasta de saída e a
+inclusão dos prompts na função.
+
+1. Envie o código para o GitHub (`git push` na `main`).
+2. Em [vercel.com](https://vercel.com), entre com o GitHub → **Add New… → Project** → importe `mnemosyne`.
+3. O framework (Vite), o comando de build e a saída vêm do `vercel.json`; não precisa mudar nada.
+4. Em **Environment Variables**, adicione `OPENAI_API_KEY` (e, se quiser outro modelo, `OPENAI_MODEL`).
+5. **Deploy**. A URL será algo como `https://mnemosyne-xxxx.vercel.app`; abra `/api/saude` para conferir
+   (`"obras":15` e `"chaveConfigurada":true`). A cada push na `main` o site é publicado de novo.
+
+Cuidados:
+
+- **Limite de gasto:** em platform.openai.com → Billing, defina um teto mensal. Em funções serverless o limite de
+  perguntas por IP vale por instância (ajuda contra abuso simples, mas o teto da OpenAI é a proteção de verdade).
+- **Plano Hobby:** gratuito e sem cartão, mas voltado a projetos pessoais/não comerciais; confira os termos da Vercel.
+- **Chave:** só nas variáveis da Vercel — nunca no código nem no GitHub.
+- Os testes (`npm run test:server`) cobrem tanto o servidor local quanto as funções.
 
 ## Turmas e quadros
 

@@ -1,26 +1,10 @@
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
-import { responder, validarPedido } from './chat.js'
+import { atenderChat, LIMITE_PADRAO, saude } from './atender.js'
+import { criarLimitador } from './limite.js'
 
 const DIST = fileURLToPath(new URL('../dist', import.meta.url))
-
-/** Limite simples por IP (janela deslizante em memória) — suficiente para uma exposição escolar. */
-function limitador({ max, janelaMs }) {
-  const acessos = new Map()
-  return (req, res, next) => {
-    const agora = Date.now()
-    const recentes = (acessos.get(req.ip) ?? []).filter((t) => agora - t < janelaMs)
-    if (recentes.length >= max) {
-      res.status(429).json({ erro: 'Muitas perguntas em pouco tempo. Aguarde um instante e tente de novo.' })
-      return
-    }
-    recentes.push(agora)
-    acessos.set(req.ip, recentes)
-    if (acessos.size > 5000) for (const [ip, ts] of acessos) if (agora - ts.at(-1) > janelaMs) acessos.delete(ip)
-    next()
-  }
-}
 
 /**
  * Monta o app Express.
@@ -28,38 +12,21 @@ function limitador({ max, janelaMs }) {
  * - `cliente`: SDK da OpenAI, ou null quando não há chave configurada
  * - `modelo`: nome do modelo do GPT
  */
-export function criarApp({ prompts, cliente, modelo, limite = { max: 20, janelaMs: 60_000 } }) {
+export function criarApp({ prompts, cliente, modelo, limite = LIMITE_PADRAO }) {
   const app = express()
   app.disable('x-powered-by')
+  // Atrás de um proxy (Render, etc.) o IP verdadeiro do visitante vem no cabeçalho X-Forwarded-For.
+  app.set('trust proxy', 1)
+  const permitir = criarLimitador(limite)
   app.use(express.json({ limit: '64kb' }))
 
   app.get('/api/saude', (_req, res) => {
-    res.json({ ok: true, obras: prompts.size, modelo, chaveConfigurada: Boolean(cliente) })
+    res.json(saude({ prompts, modelo, cliente }))
   })
 
-  app.post('/api/chat', limitador(limite), async (req, res) => {
-    const pedido = validarPedido(req.body, prompts)
-    if (pedido.erro) {
-      res.status(400).json({ erro: pedido.erro })
-      return
-    }
-    if (!cliente) {
-      res.status(503).json({ erro: 'O chat ainda não foi configurado no servidor (falta a OPENAI_API_KEY).' })
-      return
-    }
-    try {
-      const texto = await responder({ cliente, modelo, prompt: prompts.get(pedido.obraId), historico: pedido.historico })
-      res.json({ resposta: texto })
-    } catch (erro) {
-      console.error(`[chat] ${pedido.obraId}:`, erro?.status ?? '', erro?.message ?? erro)
-      const status = erro?.status === 429 ? 429 : 502
-      res.status(status).json({
-        erro:
-          status === 429
-            ? 'O serviço de IA está ocupado. Tente novamente em instantes.'
-            : 'Não consegui obter a resposta agora. Tente novamente.',
-      })
-    }
+  app.post('/api/chat', async (req, res) => {
+    const { status, corpo } = await atenderChat({ corpo: req.body, ip: req.ip, prompts, cliente, modelo, permitir })
+    res.status(status).json(corpo)
   })
 
   app.use('/api', (_req, res) => res.status(404).json({ erro: 'Rota não encontrada.' }))
