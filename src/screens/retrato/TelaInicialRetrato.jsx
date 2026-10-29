@@ -42,6 +42,14 @@ export default function TelaInicialRetrato({ onEntrar }) {
   const tamanhoTitulo = Math.round(limitar(coluna.w * 0.142, 46, 68))
   const larguraBotao = Math.min(260, coluna.w - 48)
 
+  // Os bustos ficam no chão, nas laterais. Quando a coluna é estreita eles invadem o botão; então
+  // encolhem para caber no espaço entre o botão e o chão (e somem se não sobrar espaço).
+  const BUSTO_ALTURA = 274 // pedestal + cabeça, em unidades de escala 1
+  const fimDoBotao = t + 200 + 54
+  const invadeBotao = 44 + 44 * 0.62 > (coluna.w - larguraBotao) / 2
+  const escalaBusto = invadeBotao ? Math.min(0.62, (H - 92 - fimDoBotao - 16) / BUSTO_ALTURA) : 0.62
+  const comBustos = escalaBusto >= 0.32
+
   const fw = Math.max(8, Math.round(alturaQuadro * 0.075))
   const largQuadro = Math.round(alturaQuadro * 0.78)
   const yQuadros = t + alturaBloco + 36
@@ -76,10 +84,12 @@ export default function TelaInicialRetrato({ onEntrar }) {
       <Piso />
       <PisoTabuas />
       <FaixaAzulejo />
-      <Ancora y="base">
-        <Busto x={x0 + 44} y={808} escala={0.62} idMarmore="inicio-v-busto-1" idBase="inicio-v-base-1" />
-        <Busto x={x0 + coluna.w - 44} y={808} escala={0.62} idMarmore="inicio-v-busto-2" idBase="inicio-v-base-2" />
-      </Ancora>
+      {comBustos && (
+        <Ancora y="base">
+          <Busto x={x0 + 44} y={808} escala={escalaBusto} idMarmore="inicio-v-busto-1" idBase="inicio-v-base-1" />
+          <Busto x={x0 + coluna.w - 44} y={808} escala={escalaBusto} idMarmore="inicio-v-busto-2" idBase="inicio-v-base-2" />
+        </Ancora>
+      )}
 
       <text
         x={cx + 3}

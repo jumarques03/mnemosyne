@@ -42,7 +42,7 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
 
   // O cartão cresce com a altura e a largura da tela (entre 0,5× e 1,5×) e fica um pouco acima do centro.
   // Em telas baixas (celular com barras do navegador) o cabeçalho sobe para sobrar espaço ao cartão.
-  const subida = H < 700 ? 30 : 0
+  const subida = H < 700 ? 18 : 0
   const topoMin = 236 - subida
   const reservaRodape = 92 // paginador + legenda + greca
   const porAltura = (H - topoMin - reservaRodape - 12) / CARTAO.h

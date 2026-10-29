@@ -153,10 +153,11 @@ function SetaVoltar({ x, cy, largura, onClick }) {
 const LOGO = { src: '/logo-mnemosyne.png', proporcao: 229 / 99 }
 
 export function Cabecalho({ onInicio, onVoltar }) {
-  const { modo, coluna } = useLayout()
+  const { modo, coluna, H } = useLayout()
   const retrato = modo === 'retrato'
   const marcaX = retrato ? coluna.x + 24 : 60
-  const logoAltura = retrato ? 52 : 62
+  // Em telas baixas de celular a logo encolhe um pouco para sobrar espaço ao conteúdo.
+  const logoAltura = retrato ? (H < 700 ? 44 : 52) : 62
   const logoLargura = Math.round(logoAltura * LOGO.proporcao)
   const logoY = retrato ? 32 : 30
   const menuX = retrato ? coluna.x + coluna.w - 24 - 32 : 1352
