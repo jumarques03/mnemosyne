@@ -1,6 +1,7 @@
 /* Base igual em todos os navegadores: sem rolagem da página, sem zoom de texto, sem destaque de toque. */
+/* As cores são fixas: "only light" impede o modo escuro automático dos navegadores de reinterpretá-las. */
 :root {
-  color-scheme: dark;
+  color-scheme: only light;
 }
 
 html {

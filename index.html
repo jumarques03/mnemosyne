@@ -1,14 +1,17 @@
 <!doctype html>
-<html lang="pt-BR" style="color-scheme: dark">
+<html lang="pt-BR" style="color-scheme: only light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- Sem zoom de pinça: o palco é desenhado em SVG e se ajusta sozinho a qualquer tela. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#090b0a" />
-    <!-- O site já é escuro: avisa ao navegador (Samsung Internet, Chrome, extensões) para não aplicar modo escuro automático. -->
-    <meta name="color-scheme" content="dark" />
-    <meta name="supported-color-schemes" content="dark" />
+    <!--
+      As cores do site são fixas (desenhadas em SVG). "only light" é o pedido padrão para o navegador NÃO
+      aplicar modo escuro automático (Samsung Internet, Chrome, Edge…), que inverte as cores dos sites.
+    -->
+    <meta name="color-scheme" content="only light" />
+    <meta name="supported-color-schemes" content="light" />
     <meta name="darkreader-lock" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="mobile-web-app-capable" content="yes" />
