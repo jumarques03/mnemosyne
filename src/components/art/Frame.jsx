@@ -85,13 +85,25 @@ function Pregos({ x, y, w, h, fw, tema }) {
   )
 }
 
+// Obras com imagem: a moldura acompanha a proporção da imagem dentro do espaço recebido
+// (largas ficam mais baixas, estreitas mais finas), centrada no espaço e um pouco para baixo.
+const ALTURA_MINIMA = 0.82 // fração da largura: imagens mais largas que isso são cortadas nas laterais (ver `foco`)
+function ajustarAoEspaco({ x, y, w, h }, imagem) {
+  const proporcao = imagem.w / imagem.h
+  const largura = proporcao >= w / h ? w : h * proporcao
+  const altura = proporcao >= w / h ? Math.max(w / proporcao, w * ALTURA_MINIMA) : h
+  return { x: x + (w - largura) / 2, y: y + (h - altura) * 0.55, w: largura, h: altura }
+}
+
 /**
  * Quadro completo: sombra, moldura, fundo, pintura e pregos.
- * (x, y, w, h) = retângulo externo; fw = largura da moldura.
+ * (x, y, w, h) = retângulo externo (com imagem, o espaço dentro do qual a moldura se ajusta);
+ * fw = largura da moldura.
  * `passepartout` = respiro extra da moldura branca.
  * O conteúdo é a `imagem` da obra (ver data/obras.js) ou, sem ela, a pintura desenhada `pintura`.
  */
-export default function Frame({ x, y, w, h, fw, moldura, pintura, imagem, passepartout = 10 }) {
+export default function Frame({ fw, moldura, pintura, imagem, passepartout = 10, ...espaco }) {
+  const { x, y, w, h } = imagem ? ajustarAoEspaco(espaco, imagem) : espaco
   const tema = TEMAS[moldura]
   const clipId = `fr-clip-${useId().replace(/:/g, '')}`
   const folga = tema.passepartout ? fw + 3 + passepartout : fw + 3

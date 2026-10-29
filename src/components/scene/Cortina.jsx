@@ -11,7 +11,7 @@ export default function Cortina() {
   const inicio = Math.floor(b.x0 / PAINEL) * PAINEL
   const paineis = []
   for (let x = inicio; x < b.x1; x += PAINEL) paineis.push(x)
-  const amarras = [...paineis, paineis.at(-1) + PAINEL].filter((x) => x <= b.x1 + 0.5)
+  const amarras = [...paineis, paineis[paineis.length - 1] + PAINEL].filter((x) => x <= b.x1 + 0.5)
   return (
     <Ancora y="topo">
       <g pointerEvents="none">

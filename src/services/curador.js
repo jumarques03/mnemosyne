@@ -22,14 +22,19 @@ export async function perguntar(obra, conversa) {
     papel: m.de === 'visitante' ? 'user' : 'assistant',
     texto: m.texto.slice(0, LIMITE_CARACTERES),
   }))
+  // AbortController + setTimeout em vez de AbortSignal.timeout, que falta em iPhones mais antigos.
+  const controle = new AbortController()
+  const prazo = setTimeout(() => controle.abort(), TEMPO_LIMITE_MS)
   const resposta = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ obraId: obra.id, mensagens }),
-    signal: AbortSignal.timeout(TEMPO_LIMITE_MS),
-  }).catch(() => {
-    throw new Error(MENSAGEM_DE_ERRO) // servidor fora do ar, sem rede ou tempo esgotado
+    signal: controle.signal,
   })
+    .catch(() => {
+      throw new Error(MENSAGEM_DE_ERRO) // servidor fora do ar, sem rede ou tempo esgotado
+    })
+    .finally(() => clearTimeout(prazo))
   const corpo = await resposta.json().catch(() => ({}))
   if (!resposta.ok) throw new Error(corpo.erro || MENSAGEM_DE_ERRO)
   return corpo.resposta

@@ -19,6 +19,8 @@ export function Seta({ cx, cy, direcao, onClick, rotulo }) {
       onClick={interativo ? ativar : undefined}
       onKeyDown={interativo ? ativar : undefined}
     >
+      {/* área de toque maior que o desenho (≈ 52 px), para o dedo acertar */}
+      <circle cx={cx} cy={cy} r="26" fill="transparent" />
       {/* fill transparente: o miolo do círculo também recebe o clique */}
       <circle cx={cx} cy={cy} r="17" fill="transparent" stroke={cor.ouro} strokeWidth="1.2" opacity="0.7" />
       <path
@@ -40,12 +42,16 @@ export function Seta({ cx, cy, direcao, onClick, rotulo }) {
  * ilustração (a tela larga mostra todas as obras de uma vez).
  */
 export default function Paginador({ cx, cy, total, atual, onAnterior, onProximo, onIr }) {
+  // As setas se afastam à medida que há mais pontos, mantendo sempre o mesmo vão até o último ponto.
+  const passo = 22
+  const metade = ((total - 1) * passo) / 2
+  const afastamento = Math.max(70, metade + 40)
   return (
     <g>
-      <Seta cx={cx - 70} cy={cy} direcao="esq" onClick={onAnterior} rotulo="Obra anterior" />
-      <Seta cx={cx + 70} cy={cy} direcao="dir" onClick={onProximo} rotulo="Próxima obra" />
+      <Seta cx={cx - afastamento} cy={cy} direcao="esq" onClick={onAnterior} rotulo="Obra anterior" />
+      <Seta cx={cx + afastamento} cy={cy} direcao="dir" onClick={onProximo} rotulo="Próxima obra" />
       {Array.from({ length: total }, (_, i) => {
-        const x = cx + (i - (total - 1) / 2) * 20
+        const x = cx + (i - (total - 1) / 2) * passo
         const ponto =
           i === atual ? (
             <circle cx={x} cy={cy} r="4" fill={cor.ouro} opacity="1" />

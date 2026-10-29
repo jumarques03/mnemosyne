@@ -40,10 +40,14 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
     return () => window.removeEventListener('keydown', teclas)
   })
 
-  // O cartão cresce com a altura da tela (entre 0,66× e 1,12×) e fica um pouco acima do centro.
-  const topoMin = 236
-  const reservaRodape = 72
-  const escala = limitar((H - topoMin - reservaRodape - 12) / CARTAO.h, 0.66, 1.12)
+  // O cartão cresce com a altura e a largura da tela (entre 0,5× e 1,5×) e fica um pouco acima do centro.
+  // Em telas baixas (celular com barras do navegador) o cabeçalho sobe para sobrar espaço ao cartão.
+  const subida = H < 700 ? 30 : 0
+  const topoMin = 236 - subida
+  const reservaRodape = 92 // paginador + legenda + greca
+  const porAltura = (H - topoMin - reservaRodape - 12) / CARTAO.h
+  const porLargura = (coluna.w - 40) / CARTAO.w
+  const escala = limitar(Math.min(porAltura, porLargura), 0.5, 1.5)
   const sobra = Math.max(0, H - topoMin - reservaRodape - 12 - CARTAO.h * escala)
   const topo = topoMin + sobra * 0.35
   const base = topo + CARTAO.h * escala
@@ -69,10 +73,10 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
 
       <text
         x={cx + 0.75}
-        y="126"
+        y={126 - subida}
         textAnchor="middle"
         fontFamily={fonte.titulo}
-        fontSize="30"
+        fontSize={Math.min(30, Math.round(coluna.w * 0.072))}
         fontWeight="700"
         fontStyle="normal"
         fill={cor.creme}
@@ -80,13 +84,13 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
       >
         ESCOLHA UM QUADRO
       </text>
-      <Pincelada x={cx - 105} y={132} sx={0.7} sy={0.16} cor={cor.ouro} opacidade="0.55" />
+      <Pincelada x={cx - 105} y={132 - subida} sx={0.7} sy={0.16} cor={cor.ouro} opacidade="0.55" />
       <text
         x={cx}
-        y="168"
+        y={168 - subida}
         textAnchor="middle"
         fontFamily={fonte.texto}
-        fontSize="20"
+        fontSize={Math.max(14, Math.min(20, Math.round(coluna.w * 0.046)))}
         fontWeight="500"
         fontStyle="italic"
         fill={cor.texto}
@@ -94,10 +98,9 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
         selecione a obra sobre a qual você quer conversar
       </text>
 
-      <SeletorTurma cx={cx} cy={206} turmas={turmas} atual={turma} onIr={onTurma} compacto />
+      <SeletorTurma cx={cx} cy={206 - subida} turmas={turmas} atual={turma} onIr={onTurma} larguraMax={coluna.w - 24} compacto />
 
       <g
-        style={{ touchAction: 'pan-y' }}
         onPointerDown={(e) => (arrasto.current = { x: e.clientX, moveu: false })}
         onPointerUp={soltar}
         onPointerCancel={() => (arrasto.current.x = null)}
@@ -118,7 +121,7 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
 
       <Paginador
         cx={cx}
-        cy={base + 38}
+        cy={base + 36}
         total={obras.length}
         atual={pagina}
         onAnterior={() => ir(pagina - 1)}
@@ -127,7 +130,7 @@ export default function TelaSelecaoRetrato({ turmas, turma, onTurma, onEscolher,
       />
       <text
         x={cx + 2}
-        y={base + 80}
+        y={base + 76}
         textAnchor="middle"
         fontFamily={fonte.rotulo}
         fontSize="11"

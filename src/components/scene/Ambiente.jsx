@@ -1,4 +1,4 @@
-import { cor, fonte } from '../../theme.js'
+import { cor } from '../../theme.js'
 import { useLayout } from '../../layout/contexto.js'
 import Ancora from '../../layout/Ancora.jsx'
 
@@ -149,28 +149,31 @@ function SetaVoltar({ x, cy, largura, onClick }) {
  * (`onVoltar`). Sem `onVoltar`, desenha o ícone de menu do design original.
  * Cada lado fica preso à sua borda.
  */
+// Logo (public/logo-mnemosyne.png, 229 × 99): moldura rosa com o nome em branco, no lugar do texto "MNEMOSYNE".
+const LOGO = { src: '/logo-mnemosyne.png', proporcao: 229 / 99 }
+
 export function Cabecalho({ onInicio, onVoltar }) {
   const { modo, coluna } = useLayout()
   const retrato = modo === 'retrato'
   const marcaX = retrato ? coluna.x + 24 : 60
-  const marcaY = retrato ? 64 : 56
+  const logoAltura = retrato ? 52 : 62
+  const logoLargura = Math.round(logoAltura * LOGO.proporcao)
+  const logoY = retrato ? 32 : 30
   const menuX = retrato ? coluna.x + coluna.w - 24 - 32 : 1352
   const menuLargura = retrato ? 32 : 40
   const menuY = retrato ? [47, 57, 67] : [38, 50, 62]
 
   const marca = (
-    <text
+    <image
+      href={LOGO.src}
       x={marcaX}
-      y={marcaY}
-      fontFamily={fonte.titulo}
-      fontSize="20"
-      fontWeight="700"
-      fontStyle="normal"
-      fill={cor.creme}
-      letterSpacing="3"
-    >
-      MNEMOSYNE
-    </text>
+      y={logoY}
+      width={logoLargura}
+      height={logoAltura}
+      preserveAspectRatio="xMinYMid meet"
+      role="img"
+      aria-label="Mnemosyne"
+    />
   )
   const ativar = (e) => {
     if (e.type === 'click' || e.key === 'Enter' || e.key === ' ') {
@@ -183,9 +186,9 @@ export function Cabecalho({ onInicio, onVoltar }) {
       <Ancora x="esq" y="topo">
         {onInicio ? (
           <g className="hit" role="link" tabIndex={0} aria-label="Voltar ao início" onClick={ativar} onKeyDown={ativar}>
-            <rect x={marcaX - 8} y={marcaY - 22} width="190" height="30" fill="transparent" />
+            <rect x={marcaX - 8} y={logoY - 4} width={logoLargura + 16} height={logoAltura + 8} fill="transparent" />
             {marca}
-            <rect className="focus-ring" x={marcaX - 12} y={marcaY - 26} width="198" height="38" rx="4" fill="none" opacity="0" />
+            <rect className="focus-ring" x={marcaX - 10} y={logoY - 6} width={logoLargura + 20} height={logoAltura + 12} rx="4" fill="none" opacity="0" />
           </g>
         ) : (
           marca

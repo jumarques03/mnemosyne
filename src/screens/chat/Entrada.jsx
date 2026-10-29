@@ -1,4 +1,7 @@
+import { useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { cor, fonte } from '../../theme.js'
+import { useLayout } from '../../layout/contexto.js'
 
 /** Sugestão de pergunta (pílula). Geometria em unidades do layout em uso. */
 export function Chip({ x, y = 696, w, h = 34, tx, texto, tamanho = 13, onClick }) {
@@ -29,15 +32,47 @@ export function Chip({ x, y = 696, w, h = 34, tx, texto, tamanho = 13, onClick }
   )
 }
 
+// Menor corpo de fonte real (px) do campo: abaixo de 16px o Safari do iPhone dá zoom ao focar.
+const FONTE_MINIMA_PX = 16
+
 /**
- * Campo de texto da pergunta. Enquanto vazio, mostra o texto-guia desenhado em SVG (como no
- * design); o <input> de verdade fica por cima, transparente.
- * `baseline` = y da linha de base do texto; `tamanho` = corpo da fonte.
+ * Campo de texto da pergunta. O texto-guia é desenhado no palco; o <input> de verdade é HTML
+ * (não foreignObject, que se comporta de jeitos diferentes entre navegadores) posicionado em
+ * cima de um retângulo-marcador do SVG e redimensionado junto com ele.
+ * `baseline` = y da linha de base do texto; `tamanho` = corpo da fonte nas unidades do palco.
  */
 export function CampoPergunta({ x, baseline, w, tamanho = 22, valor, onMudar, onEnviar }) {
   const altura = Math.round(tamanho * 2.09)
+  // a linha de base do <input> cai a ~0.652 da altura da fonte dentro da caixa
+  const topo = baseline - altura * 0.652
+  const { viewBox, alturaVisivel } = useLayout()
+  const larguraJanela = window.innerWidth
+  const marcador = useRef(null)
+  const [caixa, setCaixa] = useState(null)
+
+  // Lê onde o marcador está na tela. Repete a leitura sempre que o palco (o <svg>) muda de tamanho,
+  // por qualquer motivo: rotação, barra de endereço, teclado virtual, redimensionar a janela…
+  useLayoutEffect(() => {
+    const medir = () => {
+      const r = marcador.current?.getBoundingClientRect()
+      if (!r) return
+      const nova = { left: r.left, top: r.top, width: r.width, height: r.height }
+      setCaixa((atual) =>
+        atual && ['left', 'top', 'width', 'height'].every((k) => Math.abs(atual[k] - nova[k]) < 0.25) ? atual : nova,
+      )
+    }
+    medir()
+    const svg = marcador.current?.ownerSVGElement
+    if (!svg || typeof ResizeObserver === 'undefined') return undefined
+    const observador = new ResizeObserver(medir)
+    observador.observe(svg)
+    return () => observador.disconnect()
+  }, [viewBox, alturaVisivel, larguraJanela, x, topo, w, altura])
+
+  const escala = caixa ? caixa.width / w : 1
   return (
     <>
+      <rect ref={marcador} x={x} y={topo} width={w} height={altura} fill="none" pointerEvents="none" />
       {valor === '' && (
         <text
           x={x}
@@ -53,20 +88,29 @@ export function CampoPergunta({ x, baseline, w, tamanho = 22, valor, onMudar, on
           pergunte algo sobre este quadro…
         </text>
       )}
-      {/* a linha de base do <input> cai a ~0.652 da altura da fonte dentro da caixa */}
-      <foreignObject x={x} y={baseline - altura * 0.652} width={w} height={altura}>
-        <input
-          className="chat-input"
-          style={{ fontSize: tamanho, lineHeight: `${altura}px` }}
-          type="text"
-          value={valor}
-          maxLength={280}
-          autoComplete="off"
-          aria-label="Pergunte algo sobre este quadro"
-          onChange={(e) => onMudar(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onEnviar(valor)}
-        />
-      </foreignObject>
+      {caixa &&
+        createPortal(
+          <input
+            className="chat-input"
+            style={{
+              left: caixa.left,
+              top: caixa.top,
+              width: caixa.width,
+              height: caixa.height,
+              fontSize: Math.max(FONTE_MINIMA_PX, tamanho * escala),
+              lineHeight: `${caixa.height}px`,
+            }}
+            type="text"
+            value={valor}
+            maxLength={280}
+            enterKeyHint="send"
+            autoComplete="off"
+            aria-label="Pergunte algo sobre este quadro"
+            onChange={(e) => onMudar(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onEnviar(valor)}
+          />,
+          document.body,
+        )}
     </>
   )
 }

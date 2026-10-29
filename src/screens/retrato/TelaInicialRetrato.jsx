@@ -30,12 +30,17 @@ export default function TelaInicialRetrato({ onEntrar }) {
 
   const fontePalavra = `500 15px "${fonte.rotulo}"`
   const larguras = PALAVRAS.map((p) => medirTexto(p, fontePalavra, 4))
-  const folga = 36
+  // O espaço entre as palavras encolhe nas telas estreitas (coluna de 320 a 480).
+  const somaLarguras = larguras.reduce((a, b) => a + b, 0)
+  const folga = limitar((coluna.w - 48 - somaLarguras) / (PALAVRAS.length - 1), 16, 36)
   const totalPalavras = larguras.reduce((a, b) => a + b, 0) + folga * (PALAVRAS.length - 1)
   const palavras = PALAVRAS.map((p, i) => {
     const x = cx - totalPalavras / 2 + larguras.slice(0, i).reduce((soma, l) => soma + l + folga, 0)
     return { p, x, losango: x + larguras[i] + folga / 2 - 2 }
   })
+
+  const tamanhoTitulo = Math.round(limitar(coluna.w * 0.142, 46, 68))
+  const larguraBotao = Math.min(260, coluna.w - 48)
 
   const fw = Math.max(8, Math.round(alturaQuadro * 0.075))
   const largQuadro = Math.round(alturaQuadro * 0.78)
@@ -93,7 +98,7 @@ export default function TelaInicialRetrato({ onEntrar }) {
         y={t + 76}
         textAnchor="middle"
         fontFamily={fonte.titulo}
-        fontSize="68"
+        fontSize={tamanhoTitulo}
         fontWeight="700"
         fill={cor.creme}
         letterSpacing="1"
@@ -125,13 +130,13 @@ export default function TelaInicialRetrato({ onEntrar }) {
       ))}
 
       <Botao
-        x={cx - 130}
+        x={cx - larguraBotao / 2}
         y={t + 200}
-        w={260}
+        w={larguraBotao}
         h={54}
         variante="ouro"
         texto="ENTRAR NA GALERIA"
-        textoX={xCentrado(cx - 130, 260, 'ENTRAR NA GALERIA', `500 17px "${fonte.rotulo}"`, 4)}
+        textoX={xCentrado(cx - larguraBotao / 2, larguraBotao, 'ENTRAR NA GALERIA', `500 17px "${fonte.rotulo}"`, 4)}
         textoY={t + 200 + 33}
         tamanho={17}
         onClick={onEntrar}

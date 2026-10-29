@@ -6,15 +6,26 @@ const GAP = 8
 
 /**
  * Seletor de turma: um botão por turma ("OITAVO A", "OITAVO B"…), no lugar dos pontos de página
- * da tela 02 (←/→ também trocam de turma). `compacto` aperta o espaçamento para a coluna estreita do layout vertical.
+ * da tela 02 (←/→ também trocam de turma). `compacto` aperta o espaçamento para a coluna estreita do layout vertical; com
+ * `larguraMax` os botões se apertam mais, se preciso, para caber na tela.
  */
-export default function SeletorTurma({ cx, cy, turmas, atual, onIr, compacto = false }) {
-  const espaco = compacto ? 2 : 4
-  const folga = compacto ? 20 : 32
-  const tamanho = compacto ? 13 : 15
+// corpo, espaço entre letras e folga lateral, do mais folgado ao mais apertado
+const MEDIDAS = [
+  [15, 4, 32],
+  [13, 2, 20],
+  [12, 1.5, 14],
+  [11, 1, 10],
+]
+
+function medir(turmas, [tamanho, espaco, folga]) {
   const fonteRotulo = `500 ${tamanho}px "${fonte.rotulo}"`
   const largura = Math.ceil(Math.max(...turmas.map((t) => medirTexto(t.rotulo, fonteRotulo, espaco)))) + folga
-  const total = turmas.length * largura + (turmas.length - 1) * GAP
+  return { tamanho, espaco, largura, total: turmas.length * largura + (turmas.length - 1) * GAP }
+}
+
+export default function SeletorTurma({ cx, cy, turmas, atual, onIr, compacto = false, larguraMax = Infinity }) {
+  const candidatas = MEDIDAS.slice(compacto ? 1 : 0).map((m) => medir(turmas, m))
+  const { tamanho, espaco, largura, total } = candidatas.find((c) => c.total <= larguraMax) ?? candidatas[candidatas.length - 1]
   const x0 = cx - total / 2
 
   return (

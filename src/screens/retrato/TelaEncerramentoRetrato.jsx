@@ -8,7 +8,7 @@ import { Pincelada, Luminaria, Louro } from '../../components/scene/Ornamentos.j
 
 // O bloco central é desenhado em coordenadas locais: x = 0 no eixo da tela, y = 0 no topo da coroa.
 const ALTURA_BLOCO = 548
-const TITULO = { tamanho: 40, larguraMax: 440 }
+const TITULO = { tamanho: 40, margem: 40 } // o título cabe na coluna menos a margem
 
 /** 04 · Encerramento no layout vertical: coroa de louro, "visita concluída", título e botões empilhados. */
 export default function TelaEncerramentoRetrato({ obra, onOutro, onInicio, onVoltar }) {
@@ -22,7 +22,8 @@ export default function TelaEncerramentoRetrato({ obra, onOutro, onInicio, onVol
 
   const titulo = obra.titulo.toUpperCase()
   const larguraBase = medirTexto(titulo, `700 ${TITULO.tamanho}px "${fonte.titulo}"`, 1)
-  const tamanho = TITULO.tamanho * Math.min(1, TITULO.larguraMax / larguraBase)
+  const tamanho = TITULO.tamanho * Math.min(1, (coluna.w - TITULO.margem) / escala / larguraBase)
+  const larguraBotao = Math.min(280, (coluna.w - 48) / escala)
 
   const fonteBotao = `500 13px "${fonte.rotulo}"`
 
@@ -76,28 +77,28 @@ export default function TelaEncerramentoRetrato({ obra, onOutro, onInicio, onVol
         >
           {titulo}
         </text>
-        <Pincelada x={-160} y={380} sx={1.067} sy={0.2} cor={cor.vermelho} opacidade="0.9" />
+        <Pincelada x={-Math.min(160, larguraBotao / 2 + 20)} y={380} sx={1.067} sy={0.2} cor={cor.vermelho} opacidade="0.9" />
 
         <Botao
-          x={-140}
+          x={-larguraBotao / 2}
           y={436}
-          w={280}
+          w={larguraBotao}
           h={52}
           variante="ouro"
           texto="VER OUTRO QUADRO"
-          textoX={xCentrado(-140, 280, 'VER OUTRO QUADRO', fonteBotao, 4)}
+          textoX={xCentrado(-larguraBotao / 2, larguraBotao, 'VER OUTRO QUADRO', fonteBotao, 4)}
           textoY={436 + 32}
           tamanho={13}
           onClick={onOutro}
         />
         <Botao
-          x={-140}
+          x={-larguraBotao / 2}
           y={496}
-          w={280}
+          w={larguraBotao}
           h={52}
           variante="neutro"
           texto="VOLTAR AO INÍCIO"
-          textoX={xCentrado(-140, 280, 'VOLTAR AO INÍCIO', fonteBotao, 4)}
+          textoX={xCentrado(-larguraBotao / 2, larguraBotao, 'VOLTAR AO INÍCIO', fonteBotao, 4)}
           textoY={496 + 32}
           tamanho={13}
           onClick={onInicio}

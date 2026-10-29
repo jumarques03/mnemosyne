@@ -58,10 +58,17 @@ O palco SVG acompanha a proporção da janela (`src/layout/`), sem faixas pretas
 | Janela | Modo | O que acontece |
 | --- | --- | --- |
 | mais larga que alta (≥ 0,95) | **paisagem** | O desenho de 1440 × 900 fica no centro e o viewBox cresce no eixo que sobrar. Cenário (fundo, cornija, cortina, piso, azulejos, greca, vinheta) vai até as bordas; colunas, quadros, bustos e cavaletes se prendem à lateral/rodapé mais próximo (`<Ancora>`); o conteúdo principal fica centralizado. Em 1440 × 900 nada se move. |
-| mais alta que larga (< 0,95) | **retrato** | Composição vertical própria em uma coluna de 480 (palco de até 640 em tablets): início com título e acervo empilhados; seleção com um cartão por vez (setas, pontos, ← →, arrasto lateral); chat com obra e botões no alto, conversa no meio e sugestões/campo embaixo; encerramento com botões empilhados. |
+| mais alta que larga (< 0,95) | **retrato** | Composição vertical própria, pensada para celular: 1 unidade do palco = 1 px da tela (coluna de 320 a 480, palco de até 640 em tablets), então os textos têm tamanho real: início com título e acervo empilhados; seleção com um cartão por vez (setas, pontos, ← →, arrasto lateral); chat com obra e botões no alto, conversa no meio e sugestões/campo embaixo; encerramento com botões empilhados. |
 
 O tamanho vem de `useLayoutDaJanela()` (resize e rotação) e é entregue às telas por contexto (`useLayout()`).
 Cada tela escolhe entre o desenho largo e o vertical (`src/screens/retrato/`).
+
+### Celular e navegadores
+
+- **Altura e teclado:** o app ocupa exatamente a área visível (`visualViewport`). Com o teclado virtual aberto, o layout continua vertical e o cabeçalho da obra se recolhe para a conversa e o campo ficarem visíveis. Em telas baixas (barras do navegador) o cabeçalho também fica enxuto.
+- **Rolagem:** a página não rola nem dá zoom; a conversa rola com o dedo (com inércia), a roda do mouse (igualada entre navegadores) ou arrasto, e os cartões passam com um arrasto lateral.
+- **Campo de texto:** é um `<input>` HTML de 16 px ou mais (evita o zoom automático do Safari do iPhone), posicionado sobre o palco; `foreignObject` não é usado.
+- **Compatibilidade:** o build mira Safari 14+, Chrome 87+ e Firefox 78+ (`vite.config.js`); o código do navegador evita APIs recentes (`AbortSignal.timeout`, `Array.at`, `replaceAll`).
 
 ## Como ficou fiel ao design
 
@@ -110,11 +117,24 @@ nos títulos "Título da obra 0N", cujo X no SVG foi calculado com uma largura e
 - **Encerramento:** "Ver outro quadro" e "Voltar ao início". A marca MNEMOSYNE no cabeçalho também volta ao início.
 - Tudo é acessível por teclado (Tab / Enter / Espaço).
 
-## Créditos das imagens
+## Imagens e fichas das obras
 
-Pinturas em domínio público, baixadas do Wikimedia Commons e reduzidas para ~1000 px de altura:
-Robespierre (pintor desconhecido, c. 1790) · Pizarro (Amable-Paul Coutan, 1834–35) · *Independência ou Morte* (Pedro Américo, 1888) ·
-*Maria Antonieta e seus filhos* (Vigée Le Brun, 1787) · *A Morte de Marat* (Jacques-Louis David, 1793) · *Miguel Hidalgo con estandarte* (Antonio Fabrés, 1905) ·
-*Napoleão cruzando os Alpes* (David, versão de Malmaison) · *Olympe de Gouges* (pastel de Alexander Kucharsky) · Luís XVI (Antoine-François Callet, versão do Kunsthistorisches Museum) ·
-*Moctezuma II visitando as tumbas de seus antepassados* (Daniel del Valle, 1895) · Leopoldina (Joseph Kreutzinger, 1815) · Hernán Cortés (José Salomé Pina, c. 1879, Museu do Prado) ·
-*A Família Imperial* (François-René Moreaux, 1857) · aquarela de Túpac Amaru II (autor desconhecido) · Simón Bolívar (José Gil de Castro, c. 1823).
+As imagens em `public/obras/` foram enviadas pela escola; título, artista e ano ficam em `src/data/obras.js`.
+Obras identificadas por comparação com acervos e Wikimedia Commons:
+
+| Quadro | Obra | Artista | Ano |
+| --- | --- | --- | --- |
+| La Nuit Étoilée | Retrato de Robespierre | pintor desconhecido | c. 1790 |
+| Skrik | Retrato de Pizarro | Amable-Paul Coutan | 1835 |
+| Todo mundo em pânico | Proclamação da Independência (Museu Imperial, Petrópolis) | François-René Moreaux | 1844 |
+| Vanbros | Retrato de Maria Antonieta (Musée Antoine Lécuyer) | segundo Gautier-Dagoty | c. 1775 |
+| As de Perol | A Morte de Marat | Jacques-Louis David | 1793 |
+| Conjuntivite | Hidalgo e o Estandarte | Antonio Fabrés | 1905 |
+| Future Art | Napoleão no campo de batalha de Wagram (Museo Napoleonico, Roma) | Joseph Chabord | 1810 |
+| Monalisos | Retrato de Olympe de Gouges (pastel) | Alexander Kucharsky | séc. XVIII |
+| TECHNOSYNE | Retrato de Luís XVI | Antoine-François Callet | 1781 |
+| Backdoor | Montezuma, Empereur du Mexique (*Recueil d'estampes… suivant le costume de toutes les nations*) | Duflos, segundo Jean Touzé | c. 1780 |
+| Neo Dream | A Família Imperial | François-René Moreaux | 1857 |
+| Traços com vida | Um Jantar Brasileiro | Jean-Baptiste Debret | 1827 |
+
+Ainda sem autoria confirmada (aparecem como "Autor não identificado"): **MALP** (Leopoldina), **NCAM** (Hernán Cortés) e **Spook Shack** (Túpac Amaru II).

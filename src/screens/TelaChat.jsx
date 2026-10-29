@@ -37,7 +37,7 @@ export default function TelaChat(props) {
   const titulo = ajustarAoLargura(obra.titulo, fonteTitulo, 24, 266, 16)
   const tecnica = ajustarAoLargura(obra.tecnica, fonteRotulo, 14, 232, 11)
   const acervo = ajustarAoLargura(obra.acervo, fonteRotulo, 14, 232, 11)
-  const assinatura = `${obra.artista}, ${obra.ano}`
+  const assinatura = [obra.artista, obra.ano].filter(Boolean).join(', ')
   const tamanhoAssinatura = ajustarAoLargura(assinatura, fonteArtista, 19, 266, 14).tamanho
 
   const enviar = (texto) => {

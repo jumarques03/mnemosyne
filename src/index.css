@@ -1,23 +1,43 @@
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
+/* Base igual em todos os navegadores: sem rolagem da página, sem zoom de texto, sem destaque de toque. */
+:root {
+  color-scheme: dark;
 }
 
-/* Em celulares, 100dvh acompanha a barra de endereço que aparece e some. */
-@supports (height: 100dvh) {
-  html,
-  body,
-  #root {
-    height: 100dvh;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  background: #090b0a;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
 }
 
 body {
   background: #090b0a;
-  overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+/*
+ * O app ocupa exatamente a área visível. --altura-app e --topo-app vêm da visualViewport
+ * (ver layout/contexto.js), então a barra de endereço e o teclado virtual não deixam o layout
+ * "pulando" nem escondem o campo de texto; 100dvh/100% valem enquanto o JavaScript não roda.
+ */
+#root {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--topo-app, 0px);
+  height: 100%;
+  height: var(--altura-app, 100dvh);
+  overflow: hidden;
 }
 
 .stage {
@@ -27,6 +47,9 @@ body {
   text-rendering: geometricPrecision;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  /* Toda a navegação (rolar a conversa, passar de quadro) é feita pelo próprio app. */
+  touch-action: none;
 }
 
 .screen {
@@ -91,26 +114,31 @@ body {
   }
 }
 
-/* Campo de mensagem (foreignObject) */
+/* Campo de mensagem: <input> HTML posicionado sobre o palco (ver chat/CampoHtml.jsx). */
 .chat-input {
+  position: fixed;
+  z-index: 2;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
   margin: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
   outline: none;
   background: transparent;
   color: #f4ecd8;
+  caret-color: #c9a24b;
   font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
   font-weight: 500;
   font-style: italic;
+  -webkit-appearance: none;
+  appearance: none;
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: manipulation;
 }
 
 .chat-input::placeholder {
-  color: #b8a98a;
-  opacity: 0.8;
+  color: transparent; /* o texto-guia é desenhado no palco */
 }
 
 /* Troca de cartão no carrossel vertical */

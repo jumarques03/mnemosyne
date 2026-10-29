@@ -80,7 +80,7 @@ export function montarLayout(mensagens, digitando, medir, cfg = CFG_PAISAGEM) {
     const doVisitante = m.de === 'visitante'
     const lado = doVisitante ? cfg.visitante : cfg.curadoria
     const maxTexto = lado.larguraMax - PAD_X * 2
-    const texto = cfg.quebrasManuais ? m.texto : m.texto.replaceAll('\n', ' ')
+    const texto = cfg.quebrasManuais ? m.texto : m.texto.split('\n').join(' ')
     const linhas = quebrarLinhas(texto, maxTexto, medir)
     const maisLarga = Math.max(...linhas.map((l) => medir(l)))
     const natural = Math.ceil(maisLarga) + PAD_X * 2
@@ -94,7 +94,7 @@ export function montarLayout(mensagens, digitando, medir, cfg = CFG_PAISAGEM) {
     itens.push({ tipo: 'digitando', y, h: ALTURA_DIGITANDO })
     y += ALTURA_DIGITANDO
   }
-  const ultimo = itens.at(-1)
+  const ultimo = itens[itens.length - 1]
   const fim = ultimo ? ultimo.y + ultimo.h + (ultimo.tipo === 'mensagem' ? 22 : 0) : cfg.topo
   return { itens, fim }
 }
